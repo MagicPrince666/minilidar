@@ -12,8 +12,8 @@ int main(int argc, char* argv[])
 
     Uart serial(&xepoll, "/dev/ttyUSB0");
 
-    const std::string name = "/tmp/text";
-    Inotify inotify(&xepoll, name);//初始化文件监控事件并加入事件列表
-    
+    //初始化文件监控事件并加入事件列表
+    Inotify inotify(&xepoll, "/tmp/text");
+
     return xepoll.loop();//等待事件触发
 }

@@ -19,5 +19,3 @@ private:
     int uart_fd_ = -1;
     int OpenSerial(const char *cSerialName, int Bitrate);
 };
-
- 

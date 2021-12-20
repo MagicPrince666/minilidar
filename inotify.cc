@@ -38,7 +38,7 @@ const char *event_str[EVENT_NUM] =
     "IN_MOVE_SELF"
 };
 
-Inotify::Inotify(Xepoll *epoll , const std::string& name)
+Inotify::Inotify(Xepoll *epoll , const std::string name)
 : epoll_(epoll)
 {
     fd = inotify_init();

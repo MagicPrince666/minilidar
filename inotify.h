@@ -12,7 +12,7 @@
 
 class Inotify {
  public:
-  Inotify(Xepoll *epoll, const std::string& name);
+  Inotify(Xepoll *epoll, const std::string name);
   ~Inotify();
 
   int handle_event();
