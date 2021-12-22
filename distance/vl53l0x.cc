@@ -27,7 +27,7 @@ std::string Vl53l0x::ReadFileIntoString(const std::string& path) {
     return std::string((std::istreambuf_iterator<char>(input_file)), std::istreambuf_iterator<char>());
 }
 
-int Vl53l0x::GetDistance()
+std::string Vl53l0x::GetDistance()
 {
 	// char buf[1024];
 
@@ -43,5 +43,5 @@ int Vl53l0x::GetDistance()
 
     std::cout << GREEN << "Distance:" << buf << std::endl;
 
-    return 0;
+    return buf;
 }

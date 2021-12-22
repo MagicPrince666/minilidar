@@ -2,16 +2,17 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 class Mpu6050 {
 public:
-    Mpu6050(std::string device = "/sys/bus/iio/devices/iio:device1/in_distance_raw");
+    Mpu6050(std::string device = "/sys/bus/iio/devices/iio:device1/");
     ~Mpu6050();
-    bool MpuGetGyroscope(short *gx,short *gy,short *gz);
-    bool MpuGetAccelerometer(short *ax,short *ay,short *az);
+    bool MpuGetGyroscope();
+    bool MpuGetAccelerometer();
 
 private:
     FILE* mpu6050_fd_{nullptr};
-    std::string device_;
+    std::string device_ = "/sys/bus/iio/devices/iio:device1/";
     std::string ReadFileIntoString(const std::string& path);
 };
