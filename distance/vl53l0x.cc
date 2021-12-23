@@ -31,19 +31,8 @@ std::string Vl53l0x::ReadFileIntoString(const std::string& path) {
 
 std::string Vl53l0x::GetDistance()
 {
-	// char buf[1024];
-
-	// memset(buf, 0, sizeof(buf));
-
-	// fseek(vl53l0x_fd_, 0, SEEK_SET);
-	// int nBytes = fread(buf, 1, sizeof(buf)-1, vl53l0x_fd_);
-	// if (-1 == nBytes) {
-	// 	return -1;
-	// }
-
     std::string buf = ReadFileIntoString(device_);
-
-    std::cout << GREEN << "Distance:" << buf << std::endl;
+//    std::cout << GREEN << "Distance:" << buf << std::endl;
 
     return buf;
 }

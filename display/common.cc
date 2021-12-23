@@ -51,7 +51,6 @@ LcdRgb::LcdRgb(int fb_num)
 	if(access(BL_POWER, F_OK) == 0) {
         bl_fd_ = open (BL_POWER, O_RDWR);
 		write(bl_fd_, "0", 1);
-		close(bl_fd_);
     }
 
 	sprintf(str, "/dev/fb%d", fb_num);

@@ -50,7 +50,7 @@ bool Mpu6050::MpuGetGyroscope(int &gx, int &gy, int &gz)
     for (std::unordered_map<std::string, int>::iterator iter = accel.begin(); iter != accel.end(); iter++) {
         std::string buf = ReadFileIntoString(device_ + iter->first);
         iter->second = atoi(buf.c_str());
-        std::cout << GREEN << iter->first << " = " << iter->second << std::endl;
+        // std::cout << GREEN << iter->first << " = " << iter->second << std::endl;
 	}
     gx = accel["in_accel_x_raw"];
     gy = accel["in_accel_y_raw"];
@@ -67,7 +67,7 @@ bool Mpu6050::MpuGetAccelerometer(int &ax, int &ay, int &az)
     for (std::unordered_map<std::string, int>::iterator iter = anglvel.begin(); iter != anglvel.end(); iter++) {
         std::string buf = ReadFileIntoString(device_ + iter->first);
         iter->second = atoi(buf.c_str());
-        std::cout << GREEN << iter->first << " = " << iter->second << std::endl;
+        // std::cout << GREEN << iter->first << " = " << iter->second << std::endl;
 	}
     ax = anglvel["in_anglvel_x_raw"];
     ay = anglvel["in_anglvel_y_raw"];
