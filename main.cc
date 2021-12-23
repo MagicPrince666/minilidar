@@ -42,14 +42,6 @@ std::string CurrentTime()
 
 static void _signal_handler(int signum)
 {
-    if(signum == SIGINT) {
-        //中断信号
-        loop = false;
-        signal(signum, SIG_DFL);
-        return;
-        // exit(0);
-    }
-
     void *array[PRINT_SIZE_];
     char **strings;
 
@@ -92,13 +84,19 @@ static void _signal_handler(int signum)
     exit(1);
 }
 
+static void sigint_handler(int sig)
+{
+	std::cout << "--- quit the loop! ---" << std::endl;
+	loop = false;
+}
+
 int main(int argc, char* argv[])
 {
     signal(SIGPIPE, _signal_handler);  // SIGPIPE，管道破裂。
     signal(SIGSEGV, _signal_handler);  // SIGSEGV，非法内存访问
     signal(SIGFPE, _signal_handler);  // SIGFPE，数学相关的异常，如被0除，浮点溢出，等等
     signal(SIGABRT, _signal_handler);  // SIGABRT，由调用abort函数产生，进程非正常退出
-    signal(SIGINT, _signal_handler);//信号处理
+    signal(SIGINT, sigint_handler);//信号处理
 
     spdlog::info("Welcome to spdlog version {}.{}.{}  !", SPDLOG_VER_MAJOR, SPDLOG_VER_MINOR, SPDLOG_VER_PATCH);
 
@@ -107,25 +105,28 @@ int main(int argc, char* argv[])
 
 	LcdRgb lcd(0);
 	lcd.fill_screen_solid(0x0000ff);
-	lcd.fb_put_string(30, 0, title.c_str(), title.size(), 0xffffff, 0, title.size());
+	lcd.fb_put_string(30, 0, title.c_str(), title.size(), RGB_GOLDEN, true, title.size());
 
     Vl53l0x vl53l0x;
     Mpu6050 mpu6050;
+    std::string distance;
+
     while (loop) {
-        std::string distance = vl53l0x.GetDistance();
-        lcd.fb_put_string(30, 20, distance.c_str(), distance.size(), 0xffffff, true, distance.size());
+        distance = vl53l0x.GetDistance();
+        lcd.fb_put_string(30, 20, distance.c_str(), distance.size(), RGB_VERMILION, true, distance.size());
 
         int gx,gy,gz;
         int ax,ay,az;
         mpu6050.MpuGetGyroscope(gx, gy, gz);
         mpu6050.MpuGetAccelerometer(ax, ay, az);
-        std::string tmp;
-        char str[128] = {0};
-        int len = sprintf(str, "gx = %d", gx);
-        str[len] = 0;
-        tmp = str;
-        lcd.fb_put_string(30, 20, tmp.c_str(), tmp.size(), 0xffffff, true, tmp.size());
-        sleep(1);
+        lcd.fb_put_string(30, 40, gx, 5, RGB_GOLDEN, true, 5);
+        lcd.fb_put_string(30, 60, gy, 5, RGB_GOLDEN, true, 5);
+        lcd.fb_put_string(30, 80, gz, 5, RGB_GOLDEN, true, 5);
+
+        lcd.fb_put_string(100, 40, ax, 5, RGB_GOLDEN, true, 5);
+        lcd.fb_put_string(100, 60, ay, 5, RGB_GOLDEN, true, 5);
+        lcd.fb_put_string(100, 80, az, 5, RGB_GOLDEN, true, 5);
+        usleep(500000);
     }
 
     // Xepoll xepoll;//初始化事件模型

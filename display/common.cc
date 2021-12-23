@@ -106,14 +106,15 @@ void LcdRgb::fb_clear_area(int x, int y, int w, int h)
 void LcdRgb::fb_put_char(int x, int y, char c,
 		unsigned color)
 {
-	int i, j, bits, loc;
+	int j, bits;
+	uint32_t loc;
 	uint8_t *p8;
 	uint16_t *p16;
 	uint32_t *p32;
 	struct fb_var_screeninfo *var = &fb_info_->var;
 	struct fb_fix_screeninfo *fix = &fb_info_->fix;
 
-	for (i = 0; i < 8; i++) {
+	for (uint32_t i = 0; i < 8; i++) {
 		bits = fontdata_8x8[8 * c + i];
 		for (j = 0; j < 8; j++) {
 			loc = (x + j + var->xoffset) * (var->bits_per_pixel / 8)
@@ -139,17 +140,36 @@ void LcdRgb::fb_put_char(int x, int y, char c,
 	}
 }
 
-int LcdRgb::fb_put_string(int x, int y, const char *s, int maxlen,
+int LcdRgb::fb_put_string(int x, int y, const char *s, uint32_t maxlen,
 		int color, bool clear, int clearlen)
 {
-	int i;
 	int w = 0;
 
 	if (clear)
 		fb_clear_area(x, y, clearlen * 8, 8);
 
-	for (i = 0; i < strlen(s) && i < maxlen; i++) {
+	for (uint32_t i = 0; i < strlen(s) && i < maxlen; i++) {
 		fb_put_char((x + 8 * i), y, s[i], color);
+		w += 8;
+	}
+
+	return w;
+}
+
+int LcdRgb::fb_put_string(int x, int y, int value, uint32_t maxlen,
+		int color, bool clear, int clearlen)
+{
+	int w = 0;
+	char str[40] = {0};
+
+	int len = sprintf(str, "%d", value);
+	str[len] = 0;
+
+	if (clear)
+		fb_clear_area(x, y, clearlen * 8, 8);
+
+	for (uint32_t i = 0; i < strlen(str) && i < maxlen; i++) {
+		fb_put_char((x + 8 * i), y, str[i], color);
 		w += 8;
 	}
 

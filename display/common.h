@@ -57,7 +57,9 @@ public:
 	void fb_update_window(int fd, short x, short y, short w, short h);
 	void fb_sync_gfx(int fd);
 	void fill_screen_solid(uint32_t color);
-	int fb_put_string(int x, int y, const char *s, int maxlen,
+	int fb_put_string(int x, int y, const char *s, uint32_t maxlen,
+			int color, bool clear, int clearlen);
+	int fb_put_string(int x, int y, int value, uint32_t maxlen,
 			int color, bool clear, int clearlen);
 
 private:
@@ -69,5 +71,21 @@ private:
 	struct fb_info* fb_info_;
 	int bl_fd_{-1};
 };
+
+
+#define RGB_BLACK	0x000000
+#define	RGB_WHITE	0xFFFFFF
+#define	RGB_GRAY	0x808080
+#define	RGB_RED		0xFF0000
+#define	RGB_ORANGE	0xFFA500
+#define	RGB_GREEN	0x008000
+#define	RGB_BLUE	0x0000FF
+#define	RGB_SILVER	0xC0C0C0
+#define	RGB_BROWN	0xA52A2A
+#define	RGB_CYAN	0x00FFFF
+#define	RGB_CERISE	0xDE3163
+#define RGB_YELLOW	0xFFFF00
+#define	RGB_GOLDEN	0xFFD700
+#define	RGB_VERMILION	0xFF4D00
 
 #endif

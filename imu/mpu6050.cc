@@ -3,22 +3,22 @@
 #include <sstream>
 #include <unordered_map>
 #include <map>
+#include <sys/stat.h>
 
 #include "mpu6050.h"
 #include "interface.h"
 
 Mpu6050::Mpu6050(std::string device) 
 : device_(device) {
-    // mpu6050_fd_ = fopen(device.c_str(),"r+");
-    // if (NULL == mpu6050_fd_) {
-    //     std::cout << RED << device << " not exists!" << std::endl;
-	// 	exit(-1);
-	// }
+    struct stat buffer;
+    if(stat(device.c_str(), &buffer) != 0) {
+        std::cout << RED <<"Device " << device <<" not extis\n";
+        exit(-1);
+    }
 }
 
 Mpu6050::~Mpu6050() {
-    fclose(mpu6050_fd_);
-    std::cout << BOLDGREEN << "Close device!" << std::endl;
+    std::cout << BOLDGREEN << "Close mpu6050 device!" << std::endl;
 }
 
 std::string Mpu6050::ReadFileIntoString(const std::string& path) {

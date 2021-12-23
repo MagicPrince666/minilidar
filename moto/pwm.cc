@@ -30,12 +30,9 @@ int Pwm::setup_pwm(int pin)
     FILE *set_export = NULL;
     sprintf(setpin_, "%d", pin);
     set_export = fopen("/sys/class/pwm/pwmchip0/export", "w");
-    if (set_export == NULL)
-    {
+    if (set_export == NULL) {
         printf("Can\'t open /sys/class/pwm/pwmchip0/export\n");
-    }
-    else
-    {
+    } else {
         fprintf(set_export, setpin_);
     }
     fclose(set_export);
@@ -48,11 +45,9 @@ int Pwm::pwm_enable()
     int len = sprintf(setpin_, "/sys/class/pwm/pwmchip0/pwm%d/enable", pwm_pin_);
     setpin_[len] = 0;
     set_enable = fopen(setpin_, "w");
-    if (set_enable == NULL)
-    {
+    if (set_enable == NULL) {
         printf("open %s error\n", setpin_);
-    }
-    else {
+    } else {
         fprintf(set_enable, "1");
     }
     fclose(set_enable);
@@ -65,11 +60,9 @@ int Pwm::pwm_disable()
     int len = sprintf(setpin_, "/sys/class/pwm/pwmchip0/pwm%d/enable", pwm_pin_);
     setpin_[len] = 0;
     set_enable = fopen(setpin_, "w");
-    if (set_enable == NULL)
-    {
+    if (set_enable == NULL) {
         printf("open %s error\n", setpin_);
-    }
-    else {
+    } else {
         fprintf(set_enable, "0");
     }
     fclose(set_enable);

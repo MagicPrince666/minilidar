@@ -15,8 +15,10 @@ Vl53l0x::Vl53l0x(std::string device)
 }
 
 Vl53l0x::~Vl53l0x() {
-    fclose(vl53l0x_fd_);
-    std::cout << BOLDGREEN << "Close device!" << std::endl;
+    if(vl53l0x_fd_ != nullptr) {
+        fclose(vl53l0x_fd_);
+    }
+    std::cout << BOLDGREEN << "Close vl53l0x device!" << std::endl;
 }
 
 std::string Vl53l0x::ReadFileIntoString(const std::string& path) {
