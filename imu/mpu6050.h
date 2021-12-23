@@ -8,8 +8,8 @@ class Mpu6050 {
 public:
     Mpu6050(std::string device = "/sys/bus/iio/devices/iio:device1/");
     ~Mpu6050();
-    bool MpuGetGyroscope();
-    bool MpuGetAccelerometer();
+    bool MpuGetGyroscope(int &gx, int &gy, int &gz);
+    bool MpuGetAccelerometer(int &ax, int &ay, int &az);
 
 private:
     FILE* mpu6050_fd_{nullptr};

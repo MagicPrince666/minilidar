@@ -67,6 +67,7 @@ private:
 		uint32_t color);
 
 	struct fb_info* fb_info_;
+	int bl_fd_{-1};
 };
 
 #endif

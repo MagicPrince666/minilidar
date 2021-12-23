@@ -10,6 +10,8 @@
 #include <iomanip>
 #include <algorithm>
 #include <sstream>
+#include <signal.h>
+#include <execinfo.h>
 
 #include "spdlog/spdlog.h"
 #include "spdlog/cfg/env.h"  // support for loading levels from the environment variable
@@ -23,6 +25,8 @@
 #include "vl53l0x.h"
 #include "mpu6050.h"
 
+bool loop = true;
+
 std::string CurrentTime()
 {
 	std::stringstream ss;
@@ -34,8 +38,68 @@ std::string CurrentTime()
 	return str1;
 }
 
+#define PRINT_SIZE_ 100
+
+static void _signal_handler(int signum)
+{
+    if(signum == SIGINT) {
+        //中断信号
+        loop = false;
+        signal(signum, SIG_DFL);
+        return;
+        // exit(0);
+    }
+
+    void *array[PRINT_SIZE_];
+    char **strings;
+
+    size_t size = backtrace(array, PRINT_SIZE_);
+    strings = backtrace_symbols(array, size);
+
+    if (strings == nullptr) {
+	   fprintf(stderr, "backtrace_symbols");
+	   exit(EXIT_FAILURE);
+    }
+
+    switch(signum) {
+        case SIGSEGV:
+        fprintf(stderr, "widebright received SIGSEGV! Stack trace:\n");
+        break;
+
+        case SIGPIPE:
+        fprintf(stderr, "widebright received SIGPIPE! Stack trace:\n");
+        break;
+
+        case SIGFPE:
+        fprintf(stderr, "widebright received SIGFPE! Stack trace:\n");
+        break;
+
+        case SIGABRT:
+        fprintf(stderr, "widebright received SIGABRT! Stack trace:\n");
+        break;
+
+        default:
+        break;
+    }
+
+    for (size_t i = 0; i < size; i++) {
+        fprintf(stderr, "%d %s \n", i, strings[i]);
+    }
+
+    free(strings);
+    // signal(signum, SIG_DFL); /* 还原默认的信号处理handler */
+
+    exit(1);
+}
+
 int main(int argc, char* argv[])
 {
+    signal(SIGPIPE, _signal_handler);  // SIGPIPE，管道破裂。
+    signal(SIGSEGV, _signal_handler);  // SIGSEGV，非法内存访问
+    signal(SIGFPE, _signal_handler);  // SIGFPE，数学相关的异常，如被0除，浮点溢出，等等
+    signal(SIGABRT, _signal_handler);  // SIGABRT，由调用abort函数产生，进程非正常退出
+    signal(SIGINT, _signal_handler);//信号处理
+
     spdlog::info("Welcome to spdlog version {}.{}.{}  !", SPDLOG_VER_MAJOR, SPDLOG_VER_MINOR, SPDLOG_VER_PATCH);
 
 	std::string title = "Huang liquan ";
@@ -47,21 +111,31 @@ int main(int argc, char* argv[])
 
     Vl53l0x vl53l0x;
     Mpu6050 mpu6050;
-    while (true) {
+    while (loop) {
         std::string distance = vl53l0x.GetDistance();
         lcd.fb_put_string(30, 20, distance.c_str(), distance.size(), 0xffffff, true, distance.size());
 
-        mpu6050.MpuGetGyroscope();
-        mpu6050.MpuGetAccelerometer();
+        int gx,gy,gz;
+        int ax,ay,az;
+        mpu6050.MpuGetGyroscope(gx, gy, gz);
+        mpu6050.MpuGetAccelerometer(ax, ay, az);
+        std::string tmp;
+        char str[128] = {0};
+        int len = sprintf(str, "gx = %d", gx);
+        str[len] = 0;
+        tmp = str;
+        lcd.fb_put_string(30, 20, tmp.c_str(), tmp.size(), 0xffffff, true, tmp.size());
         sleep(1);
     }
 
-    Xepoll xepoll;//初始化事件模型
+    // Xepoll xepoll;//初始化事件模型
 
-    Uart serial(&xepoll, "/dev/ttyUSB0");
+    // Uart serial(&xepoll, "/dev/ttyUSB0");
 
-    //初始化文件监控事件并加入事件列表
-    Inotify inotify(&xepoll, "/tmp/text");
+    // //初始化文件监控事件并加入事件列表
+    // Inotify inotify(&xepoll, "/tmp/text");
 
-    return xepoll.loop();//等待事件触发
+    // return xepoll.loop();//等待事件触发
+
+    return 0;
 }

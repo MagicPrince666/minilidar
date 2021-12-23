@@ -37,6 +37,8 @@
 #include "common.h"
 #include "font_8x8.h"
 
+#define BL_POWER "/sys/class/backlight/backlight/bl_power"
+
 LcdRgb::LcdRgb(int fb_num)
 {
 	char str[64];
@@ -46,6 +48,11 @@ LcdRgb::LcdRgb(int fb_num)
 
 	// if(ioctl(tty, KDSETMODE, KD_GRAPHICS) == -1)
 	// 	printf("Failed to set graphics mode on tty1\n");
+	if(access(BL_POWER, F_OK) == 0) {
+        bl_fd_ = open (BL_POWER, O_RDWR);
+		write(bl_fd_, "0", 1);
+		close(bl_fd_);
+    }
 
 	sprintf(str, "/dev/fb%d", fb_num);
 	fd = open(str, O_RDWR);
@@ -75,6 +82,10 @@ LcdRgb::~LcdRgb()
 {
 	close(fb_info_->fd);
 	delete fb_info_;
+	if(bl_fd_) {
+		write(bl_fd_, "1", 1);
+		close(bl_fd_);
+	}
 }
 
 void LcdRgb::fb_clear_area(int x, int y, int w, int h)

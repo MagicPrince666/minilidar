@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <unordered_map>
+#include <map>
 
 #include "mpu6050.h"
 #include "interface.h"
@@ -28,29 +29,32 @@ std::string Mpu6050::ReadFileIntoString(const std::string& path) {
     return std::string((std::istreambuf_iterator<char>(input_file)), std::istreambuf_iterator<char>());
 }
 
-std::vector<std::string> accel = {
-    {"in_accel_x_raw"},
-    {"in_accel_y_raw"},
-    {"in_accel_z_raw"}
+std::unordered_map<std::string, int> accel = {
+    {"in_accel_x_raw", 0},
+    {"in_accel_y_raw", 0},
+    {"in_accel_z_raw", 0}
 };
 
-std::vector<std::string> anglvel = {
-    {"in_anglvel_x_raw"},
-    {"in_anglvel_y_raw"},
-    {"in_anglvel_z_raw"}
+std::unordered_map<std::string, int> anglvel = {
+    {"in_anglvel_x_raw", 0},
+    {"in_anglvel_y_raw", 0},
+    {"in_anglvel_z_raw", 0}
 };
 
 //得到陀螺仪值(原始值)
 //gx,gy,gz:陀螺仪x,y,z轴的原始读数(带符号)
 //返回值:0,成功
 //    其他,错误代码
-bool Mpu6050::MpuGetGyroscope()
+bool Mpu6050::MpuGetGyroscope(int &gx, int &gy, int &gz)
 {
-    for (std::vector<std::string>::iterator iter = accel.begin(); iter != accel.end(); iter++) {
-        std::string buf = ReadFileIntoString(device_ + *iter);
-        std::cout << GREEN << *iter << " = " << buf << std::endl;
+    for (std::unordered_map<std::string, int>::iterator iter = accel.begin(); iter != accel.end(); iter++) {
+        std::string buf = ReadFileIntoString(device_ + iter->first);
+        iter->second = atoi(buf.c_str());
+        std::cout << GREEN << iter->first << " = " << iter->second << std::endl;
 	}
-
+    gx = accel["in_accel_x_raw"];
+    gy = accel["in_accel_y_raw"];
+    gz = accel["in_accel_z_raw"];
     return true;
 }
  
@@ -58,12 +62,16 @@ bool Mpu6050::MpuGetGyroscope()
 //ax,ay,az:陀螺仪x,y,z轴的原始读数(带符号)
 //返回值:0,成功
 //    其他,错误代码
-bool Mpu6050::MpuGetAccelerometer()
+bool Mpu6050::MpuGetAccelerometer(int &ax, int &ay, int &az)
 {
-    for (std::vector<std::string>::iterator iter = anglvel.begin(); iter != anglvel.end(); iter++) {
-        std::string buf = ReadFileIntoString(device_ + *iter);
-        std::cout << GREEN << *iter << " = " << buf << std::endl;
+    for (std::unordered_map<std::string, int>::iterator iter = anglvel.begin(); iter != anglvel.end(); iter++) {
+        std::string buf = ReadFileIntoString(device_ + iter->first);
+        iter->second = atoi(buf.c_str());
+        std::cout << GREEN << iter->first << " = " << iter->second << std::endl;
 	}
+    ax = anglvel["in_anglvel_x_raw"];
+    ay = anglvel["in_anglvel_y_raw"];
+    az = anglvel["in_anglvel_z_raw"];
     return true;
 }
 
