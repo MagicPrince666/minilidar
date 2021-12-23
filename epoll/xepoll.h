@@ -21,11 +21,13 @@ class Xepoll {
   int add(int fd, std::function<void()> handler);
   int del(int fd);
   int loop();
+  bool QuitEpool();
 
  private:
   struct epoll_event ev_, events_[MAXEVENTS];
   int epfd_;
   int nfds_;
+  bool epoll_loop_{true};
   std::unordered_map<int, std::function<void()>> listeners_;
 };
 

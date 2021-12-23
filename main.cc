@@ -1,15 +1,6 @@
 #include <iostream>
-#include <fstream>
 #include <cstdio>
-#include <cstdlib>
-#include <stdexcept>
-#include <vector>
-#include <chrono>
-#include <codecvt>
 #include <string>
-#include <iomanip>
-#include <algorithm>
-#include <sstream>
 #include <signal.h>
 #include <execinfo.h>
 
@@ -17,26 +8,14 @@
 #include "spdlog/cfg/env.h"  // support for loading levels from the environment variable
 #include "spdlog/fmt/ostr.h" // support for user defined types
 
-#include "common.h"
 #include "uart.h"
 #include "xepoll.h"
+#include "timerfd.h"
 #include "inotify.h"
 #include "interface.h"
-#include "vl53l0x.h"
-#include "mpu6050.h"
 
-bool loop = true;
 
-std::string CurrentTime()
-{
-	std::stringstream ss;
-	std::string str = "%Y-%m-%d %H-%M-%S";
-	std::chrono::system_clock::time_point a = std::chrono::system_clock::now();      //时间点可以做差
-	time_t t1 = std::chrono::system_clock::to_time_t(a);				  //time_t可以格式化
-	ss << std::put_time(localtime(&t1), str.c_str());
-	std::string str1 = ss.str();
-	return str1;
-}
+Xepoll *xepoll; //初始化事件模型
 
 #define PRINT_SIZE_ 100
 
@@ -79,7 +58,7 @@ static void _signal_handler(int signum)
     }
 
     free(strings);
-    // signal(signum, SIG_DFL); /* 还原默认的信号处理handler */
+    signal(signum, SIG_DFL); /* 还原默认的信号处理handler */
 
     exit(1);
 }
@@ -87,7 +66,9 @@ static void _signal_handler(int signum)
 static void sigint_handler(int sig)
 {
 	std::cout << "--- quit the loop! ---" << std::endl;
-	loop = false;
+	if(xepoll != nullptr) {
+        xepoll->QuitEpool();
+    }
 }
 
 int main(int argc, char* argv[])
@@ -100,42 +81,14 @@ int main(int argc, char* argv[])
 
     spdlog::info("Welcome to spdlog version {}.{}.{}  !", SPDLOG_VER_MAJOR, SPDLOG_VER_MINOR, SPDLOG_VER_PATCH);
 
-	std::string title = "Huang liquan ";
-	title += CurrentTime();
+    xepoll = new Xepoll;
 
-	LcdRgb lcd(0);
-	lcd.fill_screen_solid(0x0000ff);
-	lcd.fb_put_string(30, 0, title.c_str(), title.size(), RGB_GOLDEN, true, title.size());
-
-    Vl53l0x vl53l0x;
-    Mpu6050 mpu6050;
-
-    while (loop) {
-        int distance = vl53l0x.GetDistance();
-        lcd.fb_put_string(30, 20, distance, 5, RGB_VERMILION, true, 5);
-
-        int gx,gy,gz;
-        int ax,ay,az;
-        mpu6050.MpuGetGyroscope(gx, gy, gz);
-        mpu6050.MpuGetAccelerometer(ax, ay, az);
-        lcd.fb_put_string(30, 40, gx, 5, RGB_GOLDEN, true, 5);
-        lcd.fb_put_string(30, 60, gy, 5, RGB_GOLDEN, true, 5);
-        lcd.fb_put_string(30, 80, gz, 5, RGB_GOLDEN, true, 5);
-
-        lcd.fb_put_string(100, 40, ax, 5, RGB_GOLDEN, true, 5);
-        lcd.fb_put_string(100, 60, ay, 5, RGB_GOLDEN, true, 5);
-        lcd.fb_put_string(100, 80, az, 5, RGB_GOLDEN, true, 5);
-        usleep(500000);
-    }
-
-    // Xepoll xepoll;//初始化事件模型
-
-    // Uart serial(&xepoll, "/dev/ttyUSB0");
+    TimerFd timerfd(xepoll);
+    // Uart serial(xepoll, "/dev/ttyUSB0");
 
     // //初始化文件监控事件并加入事件列表
-    // Inotify inotify(&xepoll, "/tmp/text");
+    Inotify inotify(xepoll, "/tmp/text");
 
-    // return xepoll.loop();//等待事件触发
+    return xepoll->loop();//等待事件触发
 
-    return 0;
 }

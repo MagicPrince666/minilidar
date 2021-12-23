@@ -46,9 +46,15 @@ int Xepoll::del(int fd)
     return listeners_.erase(fd) - 1;
 }
 
+bool Xepoll::QuitEpool()
+{
+    epoll_loop_ = false;
+    return false;
+}
+
 int Xepoll::loop()
 {
-    while (1)
+    while (epoll_loop_)
     {
         nfds_ = ::epoll_wait(epfd_, events_, MAXEVENTS, 1000);
 
@@ -69,12 +75,9 @@ int Xepoll::loop()
             {
                 // 在map中寻找对应的回调函数
                 auto handle_it = listeners_.find(events_[i].data.fd);
-                if (handle_it != listeners_.end())
-                {
+                if (handle_it != listeners_.end()) {
                     handle_it->second();
-                }
-                else
-                {
+                } else {
                     std::cout << "can not find the fd:" << events_[i].data.fd << std::endl;
                 }
             }

@@ -14,5 +14,6 @@ public:
 private:
     Xepoll *epoll_;
     int timer_fd_{-1};
+    std::string CurrentTime();
 };
 
