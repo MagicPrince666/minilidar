@@ -109,11 +109,10 @@ int main(int argc, char* argv[])
 
     Vl53l0x vl53l0x;
     Mpu6050 mpu6050;
-    std::string distance;
 
     while (loop) {
-        distance = vl53l0x.GetDistance();
-        lcd.fb_put_string(30, 20, distance.c_str(), distance.size(), RGB_VERMILION, true, distance.size());
+        int distance = vl53l0x.GetDistance();
+        lcd.fb_put_string(30, 20, distance, 5, RGB_VERMILION, true, 5);
 
         int gx,gy,gz;
         int ax,ay,az;

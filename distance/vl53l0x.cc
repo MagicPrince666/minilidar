@@ -29,10 +29,10 @@ std::string Vl53l0x::ReadFileIntoString(const std::string& path) {
     return std::string((std::istreambuf_iterator<char>(input_file)), std::istreambuf_iterator<char>());
 }
 
-std::string Vl53l0x::GetDistance()
+int Vl53l0x::GetDistance()
 {
     std::string buf = ReadFileIntoString(device_);
-//    std::cout << GREEN << "Distance:" << buf << std::endl;
+    int val = atoi(buf.c_str());
 
-    return buf;
+    return val;
 }
