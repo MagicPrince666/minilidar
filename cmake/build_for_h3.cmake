@@ -5,7 +5,7 @@ SET(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/install)
 
 SET(CMAKE_SYSTEM_PROCESSOR arm)
 # 工具链地址
-SET(TOOLCHAIN_DIR  "/home/leo/H3/xos/output/host/bin/")
+SET(TOOLCHAIN_DIR  "/home/leo/prince/xos/output/host/bin/")
 
 # imx8mmini
 SET(CMAKE_C_COMPILER ${TOOLCHAIN_DIR}arm-neo-linux-gnueabihf-gcc)

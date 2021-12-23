@@ -29,20 +29,26 @@ ELSEIF (UNIX)
     add_subdirectory(epoll)
 ENDIF ()
 
-add_subdirectory(distance)
 add_subdirectory(imu)
+add_subdirectory(distance)
+add_subdirectory(ultrasonic)
+add_subdirectory(moto)
+add_subdirectory(display)
 
 set(EXEC_NAME minilidar)
 
 add_executable(${EXEC_NAME} main.cc
     uart.cc
     inotify.cc
-    common.cc
+    timerfd.cc
 )
 
 target_link_libraries(${EXEC_NAME} 
     multiplexing
     distance
     imu
+    moto
+    display
+    ultrasonic
 )
 
