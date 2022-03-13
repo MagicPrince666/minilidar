@@ -34,6 +34,7 @@ add_subdirectory(distance)
 add_subdirectory(ultrasonic)
 add_subdirectory(moto)
 add_subdirectory(display)
+add_subdirectory(lib_json)
 
 set(EXEC_NAME minilidar)
 
@@ -50,5 +51,6 @@ target_link_libraries(${EXEC_NAME}
     moto
     display
     ultrasonic
+    json
 )
 
