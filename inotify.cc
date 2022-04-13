@@ -38,8 +38,7 @@ const char *event_str[EVENT_NUM] =
     "IN_MOVE_SELF"
 };
 
-Inotify::Inotify(Xepoll *epoll , const std::string name)
-: epoll_(epoll)
+Inotify::Inotify(const std::string name)
 {
     fd = inotify_init();
     if (fd < 0) {
@@ -58,13 +57,18 @@ Inotify::Inotify(Xepoll *epoll , const std::string name)
     if (wd < 0) {
         fprintf(stderr, "inotify_add_watch %s failed\n", name.c_str());
         exit(1);
-    } else epoll_->add(fd, std::bind(&Inotify::handle_event, this));
+    } else {
+        MY_EPOLL->EpollAdd(fd, std::bind(&Inotify::handle_event, this));
+    }
 
 }
 
 Inotify::~Inotify()
 {
-    close(fd);
+    if(fd > 0) {
+        MY_EPOLL->EpollDel(fd);
+        close(fd);
+    }
     std::cout << "inotify deinit" << std::endl;
 }
 

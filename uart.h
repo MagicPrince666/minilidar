@@ -7,7 +7,7 @@
 class Uart
 {
 public:
-    Uart(Xepoll *epoll, std::string device = "/dev/ttyUSB0");
+    Uart(std::string device = "/dev/ttyUSB0");
     ~Uart();
     int sendData(const char* bufout, int size);
     int RecvData(char* bufin);
@@ -15,7 +15,6 @@ public:
     bool UartRead();
 
 private:
-    Xepoll *epoll_;
     int uart_fd_ = -1;
     int OpenSerial(const char *cSerialName, int Bitrate);
 };

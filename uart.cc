@@ -20,8 +20,7 @@
 
 #define DATA_LEN    0xFF
 
-Uart::Uart(Xepoll *epoll, std::string device)
-: epoll_(epoll)
+Uart::Uart(std::string device)
 {
     std::cout << "uart init " << device << std::endl;
 
@@ -36,7 +35,7 @@ Uart::Uart(Xepoll *epoll, std::string device)
     // 绑定回调函数
     if (uart_fd_ > 0) {
         std::cout << "Bind epoll" << std::endl;
-        epoll_->add(uart_fd_, std::bind(&Uart::UartLoop, this));
+        MY_EPOLL->EpollAdd(uart_fd_, std::bind(&Uart::UartLoop, this));
     }
 }
 
@@ -44,8 +43,10 @@ Uart::~Uart(void)
 {
     std::cout << "uart deinit" << std::endl;
 
-    if(uart_fd_ > 0)
+    if(uart_fd_ > 0) {
+        MY_EPOLL->EpollDel(uart_fd_);
         close(uart_fd_);
+    }
 }
 
 int Uart::OpenSerial(const char *cSerialName, int Bitrate)

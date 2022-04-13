@@ -7,38 +7,42 @@
 #include <string>
 
 #include "xepoll.h"
+Epoll *Epoll::instance_ = nullptr;
 
-Xepoll::Xepoll(void) { epfd_ = ::epoll_create(EPOLL_FD_SETSIZE); }
+Epoll::Epoll(void) { epfd_ = ::epoll_create(EPOLL_FD_SETSIZE); }
 
-Xepoll::~Xepoll(void)
+Epoll::~Epoll(void)
 {
-    ::close(epfd_);
-    std::cout << "xepoll deinit" << std::endl;
+    if (epfd_ > 0) {
+        ::close(epfd_);
+    }
+}
+
+Epoll *Epoll::Instance()
+{
+    if (!instance_) {
+        instance_ = new Epoll();
+    }
+    return instance_;
 }
 
 // 添加到epoll事件，默认设置为非阻塞且fd的端口和地址都设为复用
-int Xepoll::add(int fd, std::function<void()> handler)
+int Epoll::EpollAdd(int fd, std::function<void()> handler)
 {
     listeners_[fd] = handler;
-    ev_.data.fd = fd;
-    ev_.events = EPOLLIN;
+    ev_.data.fd    = fd;
+    ev_.events     = EPOLLIN;
 
     // 设置为非阻塞
     int sta = ::fcntl(fd, F_GETFD, 0) | O_NONBLOCK;
-    if (::fcntl(fd, F_SETFL, sta) < 0)
-    {
+    if (::fcntl(fd, F_SETFL, sta) < 0) {
         return -1;
     }
-
-    // 地址、端口复用
-    int opt = 1;
-    ::setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
-    ::setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
 
     return ::epoll_ctl(epfd_, EPOLL_CTL_ADD, fd, &ev_);
 }
 
-int Xepoll::del(int fd)
+int Epoll::EpollDel(int fd)
 {
     ev_.data.fd = fd;
     ::epoll_ctl(epfd_, EPOLL_CTL_DEL, fd, NULL);
@@ -46,20 +50,18 @@ int Xepoll::del(int fd)
     return listeners_.erase(fd) - 1;
 }
 
-bool Xepoll::QuitEpool()
+bool Epoll::EpoolQuit()
 {
     epoll_loop_ = false;
     return false;
 }
 
-int Xepoll::loop()
+int Epoll::EpollLoop()
 {
-    while (epoll_loop_)
-    {
+    while (epoll_loop_) {
         nfds_ = ::epoll_wait(epfd_, events_, MAXEVENTS, 1000);
 
-        if (nfds_ == -1)
-        {
+        if (nfds_ == -1) {
             ::perror("loop");
             ::exit(1);
         }
@@ -68,11 +70,9 @@ int Xepoll::loop()
         //   std::cout << "Epoll time out" << std::endl;
         // }
 
-        for (int i = 0; i < nfds_; i++)
-        {
+        for (int i = 0; i < nfds_; i++) {
             // 有消息可读取
-            if (events_[i].events & EPOLLIN)
-            {
+            if (events_[i].events & EPOLLIN) {
                 // 在map中寻找对应的回调函数
                 auto handle_it = listeners_.find(events_[i].data.fd);
                 if (handle_it != listeners_.end()) {

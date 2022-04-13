@@ -23,8 +23,7 @@ LcdRgb lcd(0);
 Vl53l0x vl53l0x;
 Mpu6050 mpu6050;
 
-TimerFd::TimerFd(Xepoll *epoll)
-: epoll_(epoll)
+TimerFd::TimerFd()
 {
     if(!init()) {
       std::cout << "timerfd init failed!" << std::endl;
@@ -39,6 +38,7 @@ TimerFd::TimerFd(Xepoll *epoll)
 TimerFd::~TimerFd()
 {
     if (timer_fd_) {
+        MY_EPOLL->EpollDel(timer_fd_);
         close(timer_fd_);
     }
 }
@@ -70,7 +70,7 @@ bool TimerFd::init() {
     // 启动定时器
     timerfd_settime(timer_fd_, 0, &time_intv, NULL);
     // 绑定回调函数
-    epoll_->add(timer_fd_, std::bind(&TimerFd::timeOutCallBack, this));
+    MY_EPOLL->EpollAdd(timer_fd_, std::bind(&TimerFd::timeOutCallBack, this));
 
     return true;
 }

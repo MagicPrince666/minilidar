@@ -13,21 +13,26 @@
 #define MAXEVENTS 20
 #define EPOLL_FD_SETSIZE    1024
 
-class Xepoll {
- public:
-  Xepoll();
-  ~Xepoll();
+#define MY_EPOLL Epoll::Instance()
 
-  int add(int fd, std::function<void()> handler);
-  int del(int fd);
-  int loop();
-  bool QuitEpool();
+class Epoll {
+ public:
+  static Epoll* Instance();
+  
+  ~Epoll();
+
+  int EpollAdd(int fd, std::function<void()> handler);
+  int EpollDel(int fd);
+  int EpollLoop();
+  bool EpoolQuit();
 
  private:
+  Epoll();
   struct epoll_event ev_, events_[MAXEVENTS];
   int epfd_;
   int nfds_;
   bool epoll_loop_{true};
+  static Epoll *instance_;
   std::unordered_map<int, std::function<void()>> listeners_;
 };
 

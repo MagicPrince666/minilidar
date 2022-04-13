@@ -14,8 +14,7 @@
 
 #include "ultrasonic.h"
 
-GpioKey::GpioKey(Xepoll *epoll)
-: epoll_(epoll)
+GpioKey::GpioKey()
 {
     char          buf[256] = { 0, };  /* RATS: Use ok */
     int           fd = -1;
@@ -44,6 +43,7 @@ GpioKey::GpioKey(Xepoll *epoll)
 GpioKey::~GpioKey(void)
 {
     if (key_input_fd_ > 0) {
+        MY_EPOLL->EpollDel(key_input_fd_);
         close(key_input_fd_);
     }
 }
@@ -116,7 +116,7 @@ bool GpioKey::init() {
   // 绑定回调函数
   if (key_input_fd_ > 0) {
         std::cout << "Bind epoll" << std::endl;
-        epoll_->add(key_input_fd_, std::bind(&GpioKey::IRKey, this));
+        MY_EPOLL->EpollAdd(key_input_fd_, std::bind(&GpioKey::IRKey, this));
   }
   return true;
 }

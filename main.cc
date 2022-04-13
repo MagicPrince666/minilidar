@@ -14,9 +14,6 @@
 #include "inotify.h"
 #include "interface.h"
 
-
-Xepoll *xepoll; //初始化事件模型
-
 #define PRINT_SIZE_ 100
 
 static void _signal_handler(int signum)
@@ -66,8 +63,8 @@ static void _signal_handler(int signum)
 static void sigint_handler(int sig)
 {
 	std::cout << "--- quit the loop! ---" << std::endl;
-	if(xepoll != nullptr) {
-        xepoll->QuitEpool();
+	if(MY_EPOLL != nullptr) {
+        MY_EPOLL->EpoolQuit();
     }
 }
 
@@ -81,14 +78,12 @@ int main(int argc, char* argv[])
 
     spdlog::info("Welcome to spdlog version {}.{}.{}  !", SPDLOG_VER_MAJOR, SPDLOG_VER_MINOR, SPDLOG_VER_PATCH);
 
-    xepoll = new Xepoll;
-
-    TimerFd timerfd(xepoll);
+    TimerFd timerfd();
     // Uart serial(xepoll, "/dev/ttyUSB0");
 
     // //初始化文件监控事件并加入事件列表
-    Inotify inotify(xepoll, "/tmp/text");
+    Inotify inotify("/tmp/text");
 
-    return xepoll->loop();//等待事件触发
+    return MY_EPOLL->EpollLoop();//等待事件触发
 
 }
