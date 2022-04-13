@@ -12,6 +12,7 @@
 #include <assert.h>
 
 #include "ultrasonic.h"
+#include "utils.h"
 
 Ultrasonic::Ultrasonic()
 {
@@ -19,7 +20,7 @@ Ultrasonic::Ultrasonic()
     int           fd = -1;
     std::string dev = "";
     std::vector<std::string> events;
-    getFiles("/dev/input/", events);
+    Utils::getFiles("/dev/input/", events);
     for (auto iter : events) {
         std::cout << "Device name "<< iter << std::endl;
         if ((fd = open(iter.c_str(), O_RDONLY, 0)) >= 0) {
@@ -45,42 +46,6 @@ Ultrasonic::~Ultrasonic(void)
         MY_EPOLL->EpollDel(key_input_fd_);
         close(key_input_fd_);
     }
-}
-
-void Ultrasonic::getFiles(std::string path, std::vector<std::string>& files)
-{
-	// check the parameter !
-	if( path.empty() ) {
-		return;
-	}
-	// check if dir_name is a valid dir
-	struct stat s;
-	lstat( path.c_str(), &s );
-	if( ! S_ISDIR( s.st_mode ) ) {
-		return;
-	}
-
-	struct dirent * filename;    // return value for readdir()
-	DIR * dir;                   // return value for opendir()
-	dir = opendir( path.c_str() );
-	if( NULL == dir ) {
-		return;
-	}
-
-	/* read all the files in the dir ~ */
-	while( ( filename = readdir(dir) ) != NULL ) {
-		// get rid of "." and ".."
-		if( strcmp( filename->d_name , "." ) == 0 ||
-			strcmp( filename->d_name , "..") == 0 )
-			continue;
-        std::string full_path = path + filename->d_name;
-        struct stat s;
-        lstat( full_path.c_str(), &s );
-        if( S_ISDIR( s.st_mode ) ) {
-            continue;
-        }
-        files.push_back(full_path);
-	}
 }
 
 int Ultrasonic::IRKey(void)

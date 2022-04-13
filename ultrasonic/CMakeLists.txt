@@ -4,6 +4,7 @@ add_library(ultrasonic
 )
 
 include_directories(${CMAKE_SOURCE_DIR}/epoll
+    ${CMAKE_SOURCE_DIR}
 )
 
 target_include_directories(ultrasonic
