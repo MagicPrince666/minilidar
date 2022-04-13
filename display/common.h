@@ -54,18 +54,83 @@ class LcdRgb {
 public:
 	LcdRgb(int fb_num = 0);
 	~LcdRgb();
-	void fb_update_window(int fd, short x, short y, short w, short h);
-	void fb_sync_gfx(int fd);
-	void fill_screen_solid(uint32_t color);
-	int fb_put_string(int x, int y, const char *s, uint32_t maxlen,
+
+	/**
+	 * @brief 清除屏幕
+	 * @param color 填充颜色
+	 */
+	void FillScreenSolid(uint32_t color);
+
+	/**
+	 * @brief 输出字符串
+	 * @param x 
+	 * @param y 
+	 * @param s 
+	 * @param maxlen 
+	 * @param color 
+	 * @param clear 
+	 * @param clearlen 
+	 * @return int 
+	 */
+	int FbPutString(int x, int y, const char *s, uint32_t maxlen,
 			int color, bool clear, int clearlen);
-	int fb_put_string(int x, int y, int value, uint32_t maxlen,
+	/**
+	 * @brief 将值打印到屏幕
+	 * @param x 
+	 * @param y 
+	 * @param value 
+	 * @param maxlen 
+	 * @param color 
+	 * @param clear 
+	 * @param clearlen 
+	 * @return int 
+	 */
+	int FbPutValue(int x, int y, int value, uint32_t maxlen,
 			int color, bool clear, int clearlen);
 
+	/**
+	 * @brief 画点
+	 * @param x 
+	 * @param y 
+	 * @param color 
+	 */
+	void FbDrawPixel(int x, int y, uint32_t color);
+
+	/**
+	 * @brief 画线
+	 * @param x1 
+	 * @param y1 
+	 * @param x2 
+	 * @param y2 
+	 */
+	void FbDrawLine(int x1, int y1, int x2, int y2, unsigned color);
+
+	/**
+	 * @brief 画圆
+	 * @param x 
+	 * @param y 
+	 * @param r 
+	 * @param color 
+	 */
+	void FbDrawCircle(int x, int y, int r, int color);
+
+	/**
+	 * @brief 清空区域
+	 * @param x 
+	 * @param y 
+	 * @param w 
+	 * @param h 
+	 */
+	void FbClearArea(int x, int y, int w, int h);
+
+	/**
+	 * @brief 画矩形
+	 * (x1,y1),(x2,y2):矩形的对角坐标
+	 */
+	void FbDrawRectangle(int x1, int y1, int x2, int y2, unsigned color);
+
 private:
-	void draw_pixel(int x, int y, uint32_t color);
-	void fb_clear_area(int x, int y, int w, int h);
-	void fb_put_char(int x, int y, char c,
+	void FbPutChar(int x, int y, char c,
 		uint32_t color);
 
 	struct fb_info* fb_info_;

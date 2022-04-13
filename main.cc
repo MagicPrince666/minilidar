@@ -89,7 +89,14 @@ int main(int argc, char* argv[])
     spdlog::info("Welcome to spdlog version {}.{}.{}  !", SPDLOG_VER_MAJOR, SPDLOG_VER_MINOR, SPDLOG_VER_PATCH);
     LcdRgb tft;
 
-    tft.fill_screen_solid(0xff0000);
+    tft.FillScreenSolid(0xff0000);
+    //std::string title = "Huang liquan ";
+    //tft.FbPutString(30, 0, title.c_str(), title.size(), RGB_GOLDEN, true, title.size());
+    tft.FbDrawCircle(120, 120, 120, RGB_GOLDEN);
+    tft.FbDrawLine(0, 120, 239, 120, RGB_GOLDEN);
+    tft.FbDrawLine(120, 0, 120, 239, RGB_GOLDEN);
+    tft.FbDrawRectangle(10, 10, 230, 230, RGB_GOLDEN);
+
     // TimerFd timerfd();
     // Uart serial("/dev/ttyUSB0");
 

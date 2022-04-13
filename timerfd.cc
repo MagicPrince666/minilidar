@@ -28,8 +28,8 @@ TimerFd::TimerFd()
     lcd_ = new LcdRgb(0);
     std::string title = "Huang liquan ";
 	title += CurrentTime();
-    lcd_->fill_screen_solid(0x0000ff);
-	lcd_->fb_put_string(30, 0, title.c_str(), title.size(), RGB_GOLDEN, true, title.size());
+    lcd_->FillScreenSolid(0x0000ff);
+	lcd_->FbPutString(30, 0, title.c_str(), title.size(), RGB_GOLDEN, true, title.size());
 }
 
 TimerFd::~TimerFd()
@@ -87,19 +87,19 @@ int TimerFd::timeOutCallBack() {
     int ret = read(timer_fd_, &value, sizeof(uint64_t));
 
     int distance = vl53l0x_->GetDistance();
-    lcd_->fb_put_string(30, 20, distance, 5, RGB_VERMILION, true, 5);
+    lcd_->FbPutValue(30, 20, distance, 5, RGB_VERMILION, true, 5);
 
     int gx,gy,gz;
     int ax,ay,az;
     mpu6050_->MpuGetGyroscope(gx, gy, gz);
     mpu6050_->MpuGetAccelerometer(ax, ay, az);
-    lcd_->fb_put_string(30, 40, gx, 5, RGB_GOLDEN, true, 5);
-    lcd_->fb_put_string(30, 60, gy, 5, RGB_GOLDEN, true, 5);
-    lcd_->fb_put_string(30, 80, gz, 5, RGB_GOLDEN, true, 5);
+    lcd_->FbPutValue(30, 40, gx, 5, RGB_GOLDEN, true, 5);
+    lcd_->FbPutValue(30, 60, gy, 5, RGB_GOLDEN, true, 5);
+    lcd_->FbPutValue(30, 80, gz, 5, RGB_GOLDEN, true, 5);
 
-    lcd_->fb_put_string(100, 40, ax, 5, RGB_GOLDEN, true, 5);
-    lcd_->fb_put_string(100, 60, ay, 5, RGB_GOLDEN, true, 5);
-    lcd_->fb_put_string(100, 80, az, 5, RGB_GOLDEN, true, 5);
+    lcd_->FbPutValue(100, 40, ax, 5, RGB_GOLDEN, true, 5);
+    lcd_->FbPutValue(100, 60, ay, 5, RGB_GOLDEN, true, 5);
+    lcd_->FbPutValue(100, 80, az, 5, RGB_GOLDEN, true, 5);
 
     return ret;
 }

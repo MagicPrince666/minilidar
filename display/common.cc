@@ -36,6 +36,8 @@
 
 #include "common.h"
 #include "font_8x8.h"
+#define MIN(x,y)		((x)>(y)?(y):(x))
+#define MAX(x,y)		((x)>(y)?(x):(y))
 
 #define BL_POWER "/sys/class/backlight/backlight/bl_power"
 
@@ -91,7 +93,7 @@ LcdRgb::~LcdRgb()
 	delete fb_info_;
 }
 
-void LcdRgb::fb_clear_area(int x, int y, int w, int h)
+void LcdRgb::FbClearArea(int x, int y, int w, int h)
 {
 	int i = 0;
 	int loc;
@@ -106,7 +108,7 @@ void LcdRgb::fb_clear_area(int x, int y, int w, int h)
 	}
 }
 
-void LcdRgb::fb_put_char(int x, int y, char c,
+void LcdRgb::FbPutChar(int x, int y, char c,
 		unsigned color)
 {
 	int j, bits;
@@ -143,23 +145,23 @@ void LcdRgb::fb_put_char(int x, int y, char c,
 	}
 }
 
-int LcdRgb::fb_put_string(int x, int y, const char *s, uint32_t maxlen,
+int LcdRgb::FbPutString(int x, int y, const char *s, uint32_t maxlen,
 		int color, bool clear, int clearlen)
 {
 	int w = 0;
 
 	if (clear)
-		fb_clear_area(x, y, clearlen * 8, 8);
+		FbClearArea(x, y, clearlen * 8, 8);
 
 	for (uint32_t i = 0; i < strlen(s) && i < maxlen; i++) {
-		fb_put_char((x + 8 * i), y, s[i], color);
+		FbPutChar((x + 8 * i), y, s[i], color);
 		w += 8;
 	}
 
 	return w;
 }
 
-int LcdRgb::fb_put_string(int x, int y, int value, uint32_t maxlen,
+int LcdRgb::FbPutValue(int x, int y, int value, uint32_t maxlen,
 		int color, bool clear, int clearlen)
 {
 	int w = 0;
@@ -169,17 +171,17 @@ int LcdRgb::fb_put_string(int x, int y, int value, uint32_t maxlen,
 	str[len] = 0;
 
 	if (clear)
-		fb_clear_area(x, y, clearlen * 8, 8);
+		FbClearArea(x, y, clearlen * 8, 8);
 
 	for (uint32_t i = 0; i < strlen(str) && i < maxlen; i++) {
-		fb_put_char((x + 8 * i), y, str[i], color);
+		FbPutChar((x + 8 * i), y, str[i], color);
 		w += 8;
 	}
 
 	return w;
 }
 
-void LcdRgb::draw_pixel(int x, int y, unsigned color)
+void LcdRgb::FbDrawPixel(int x, int y, unsigned color)
 {
 	void *fbmem;
 
@@ -224,7 +226,69 @@ void LcdRgb::draw_pixel(int x, int y, unsigned color)
 	}
 }
 
-void LcdRgb::fill_screen_solid(uint32_t color)
+void LcdRgb::FbDrawLine(int x1, int y1, int x2, int y2, unsigned color)
+{
+	int t; 
+	int xerr = 0,yerr = 0,delta_x, delta_y, distance; 
+	int incx, incy, uRow, uCol; 
+	delta_x = x2 - x1; //计算坐标增量 
+	delta_y = y2 - y1; 
+	uRow = x1; 
+	uCol = y1; 
+	if(delta_x > 0) incx = 1; //设置单步方向 
+	else if(delta_x == 0) incx = 0;//垂直线 
+	else { incx = -1; delta_x = -delta_x; } 
+	if(delta_y > 0) incy = 1; 
+	else if(delta_y == 0) incy = 0;//水平线 
+	else{incy = -1; delta_y = -delta_y; } 
+	if( delta_x > delta_y) distance = delta_x; //选取基本增量坐标轴 
+	else distance = delta_y; 
+	for(t = 0; t <= distance + 1; t++ )//画线输出 
+	{ 
+		FbDrawPixel(uRow, uCol, color);
+		xerr += delta_x ; 
+		yerr += delta_y ; 
+		if(xerr > distance) 
+		{ 
+			xerr -= distance; 
+			uRow += incx; 
+		} 
+		if(yerr > distance) 
+		{ 
+			yerr -= distance; 
+			uCol += incy; 
+		} 
+	}  
+}
+
+void LcdRgb::FbDrawCircle(int x, int y, int r, int color)
+{
+    int a, b, num;
+    a = 0;
+    b = r;
+    while(2 * b * b >= r * r)          // 1/8圆即可
+    {
+        FbDrawPixel(x + a, y - b,color); // 0~1
+        FbDrawPixel(x - a, y - b,color); // 0~7
+        FbDrawPixel(x - a, y + b,color); // 4~5
+        FbDrawPixel(x + a, y + b,color); // 4~3
+ 
+        FbDrawPixel(x + b, y + a,color); // 2~3
+        FbDrawPixel(x + b, y - a,color); // 2~1
+        FbDrawPixel(x - b, y - a,color); // 6~7
+        FbDrawPixel(x - b, y + a,color); // 6~5
+        
+        a++;
+        num = (a * a + b * b) - r*r;
+        if(num > 0)
+        {
+            b--;
+            a--;
+        }
+    }
+}
+
+void LcdRgb::FillScreenSolid(uint32_t color)
 {
 	uint32_t x, y;
 	uint32_t h = fb_info_->var.yres;
@@ -232,6 +296,14 @@ void LcdRgb::fill_screen_solid(uint32_t color)
 
 	for (y = 0; y < h; y++) {
 		for (x = 0; x < w; x++)
-			draw_pixel(x, y, color);
+			FbDrawPixel(x, y, color);
 	}
+}
+
+void LcdRgb::FbDrawRectangle(int x1, int y1, int x2, int y2, unsigned color)
+{
+	FbDrawLine(x1,y1,x2,y1,color);
+	FbDrawLine(x1,y1,x1,y2,color);
+	FbDrawLine(x1,y2,x2,y2,color);
+	FbDrawLine(x2,y1,x2,y2,color);
 }
