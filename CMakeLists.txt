@@ -30,6 +30,7 @@ ELSEIF (UNIX)
 ENDIF ()
 
 add_subdirectory(imu)
+add_subdirectory(input)
 add_subdirectory(distance)
 add_subdirectory(ultrasonic)
 add_subdirectory(moto)
@@ -42,6 +43,7 @@ add_executable(${EXEC_NAME} main.cc
     uart.cc
     inotify.cc
     timerfd.cc
+    utils.cc
 )
 
 target_link_libraries(${EXEC_NAME} 
@@ -52,5 +54,6 @@ target_link_libraries(${EXEC_NAME}
     display
     ultrasonic
     json
+    input
 )
 

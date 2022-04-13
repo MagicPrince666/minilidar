@@ -4,11 +4,11 @@
 #include "xepoll.h"
 #include "interface.h"
 
-class GpioKey : public Interface
+class Ultrasonic : public Interface
 {
 public:
-    GpioKey();
-    ~GpioKey();
+    Ultrasonic();
+    ~Ultrasonic();
 
     bool init();
     int IRKey();

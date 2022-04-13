@@ -16,13 +16,6 @@
 #include <assert.h>
 
 #include "timerfd.h"
-#include "vl53l0x.h"
-#include "mpu6050.h"
-#include "common.h"
-
-LcdRgb lcd(0);
-Vl53l0x vl53l0x;
-Mpu6050 mpu6050;
 
 TimerFd::TimerFd()
 {
@@ -30,11 +23,13 @@ TimerFd::TimerFd()
       std::cout << "timerfd init failed!" << std::endl;
       assert(timer_fd_ >= 0);
     }
-
+    // vl53l0x_ = new Vl53l0x;
+    // mpu6050_ = new Mpu6050;
+    lcd_ = new LcdRgb(0);
     std::string title = "Huang liquan ";
 	title += CurrentTime();
-    lcd.fill_screen_solid(0x0000ff);
-	lcd.fb_put_string(30, 0, title.c_str(), title.size(), RGB_GOLDEN, true, title.size());
+    lcd_->fill_screen_solid(0x0000ff);
+	lcd_->fb_put_string(30, 0, title.c_str(), title.size(), RGB_GOLDEN, true, title.size());
 }
 
 TimerFd::~TimerFd()
@@ -42,6 +37,15 @@ TimerFd::~TimerFd()
     if (timer_fd_) {
         MY_EPOLL->EpollDel(timer_fd_);
         close(timer_fd_);
+    }
+    if(vl53l0x_) {
+        delete vl53l0x_;
+    }
+    if(mpu6050_) {
+        delete mpu6050_;
+    }
+    if(lcd_) {
+        delete lcd_;
     }
 }
 
@@ -82,20 +86,20 @@ int TimerFd::timeOutCallBack() {
     uint64_t value;
     int ret = read(timer_fd_, &value, sizeof(uint64_t));
 
-    int distance = vl53l0x.GetDistance();
-    lcd.fb_put_string(30, 20, distance, 5, RGB_VERMILION, true, 5);
+    int distance = vl53l0x_->GetDistance();
+    lcd_->fb_put_string(30, 20, distance, 5, RGB_VERMILION, true, 5);
 
     int gx,gy,gz;
     int ax,ay,az;
-    mpu6050.MpuGetGyroscope(gx, gy, gz);
-    mpu6050.MpuGetAccelerometer(ax, ay, az);
-    lcd.fb_put_string(30, 40, gx, 5, RGB_GOLDEN, true, 5);
-    lcd.fb_put_string(30, 60, gy, 5, RGB_GOLDEN, true, 5);
-    lcd.fb_put_string(30, 80, gz, 5, RGB_GOLDEN, true, 5);
+    mpu6050_->MpuGetGyroscope(gx, gy, gz);
+    mpu6050_->MpuGetAccelerometer(ax, ay, az);
+    lcd_->fb_put_string(30, 40, gx, 5, RGB_GOLDEN, true, 5);
+    lcd_->fb_put_string(30, 60, gy, 5, RGB_GOLDEN, true, 5);
+    lcd_->fb_put_string(30, 80, gz, 5, RGB_GOLDEN, true, 5);
 
-    lcd.fb_put_string(100, 40, ax, 5, RGB_GOLDEN, true, 5);
-    lcd.fb_put_string(100, 60, ay, 5, RGB_GOLDEN, true, 5);
-    lcd.fb_put_string(100, 80, az, 5, RGB_GOLDEN, true, 5);
+    lcd_->fb_put_string(100, 40, ax, 5, RGB_GOLDEN, true, 5);
+    lcd_->fb_put_string(100, 60, ay, 5, RGB_GOLDEN, true, 5);
+    lcd_->fb_put_string(100, 80, az, 5, RGB_GOLDEN, true, 5);
 
     return ret;
 }

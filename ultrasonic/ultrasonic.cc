@@ -13,7 +13,7 @@
 
 #include "ultrasonic.h"
 
-GpioKey::GpioKey()
+Ultrasonic::Ultrasonic()
 {
     char          buf[256] = { 0, };  /* RATS: Use ok */
     int           fd = -1;
@@ -39,7 +39,7 @@ GpioKey::GpioKey()
     init();
 }
 
-GpioKey::~GpioKey(void)
+Ultrasonic::~Ultrasonic(void)
 {
     if (key_input_fd_ > 0) {
         MY_EPOLL->EpollDel(key_input_fd_);
@@ -47,7 +47,7 @@ GpioKey::~GpioKey(void)
     }
 }
 
-void GpioKey::getFiles(std::string path, std::vector<std::string>& files)
+void Ultrasonic::getFiles(std::string path, std::vector<std::string>& files)
 {
 	// check the parameter !
 	if( path.empty() ) {
@@ -83,7 +83,7 @@ void GpioKey::getFiles(std::string path, std::vector<std::string>& files)
 	}
 }
 
-int GpioKey::IRKey(void)
+int Ultrasonic::IRKey(void)
 {
     struct input_event key;
     int ret = read(key_input_fd_, &key, sizeof(key));
@@ -111,15 +111,15 @@ int GpioKey::IRKey(void)
     return ret;
 }
 
-bool GpioKey::init() {
+bool Ultrasonic::init() {
   // 绑定回调函数
   if (key_input_fd_ > 0) {
         std::cout << "Bind epoll" << std::endl;
-        MY_EPOLL->EpollAdd(key_input_fd_, std::bind(&GpioKey::IRKey, this));
+        MY_EPOLL->EpollAdd(key_input_fd_, std::bind(&Ultrasonic::IRKey, this));
   }
   return true;
 }
 
-void GpioKey::Transfer(int num) {
+void Ultrasonic::Transfer(int num) {
     is_action_ = num;
 }
