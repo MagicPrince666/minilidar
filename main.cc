@@ -2,7 +2,6 @@
 #include <cstdio>
 #include <string>
 #include <signal.h>
-#include <execinfo.h>
 
 #include "spdlog/spdlog.h"
 #include "spdlog/cfg/env.h"  // support for loading levels from the environment variable
@@ -13,6 +12,12 @@
 #include "timerfd.h"
 #include "inotify.h"
 #include "interface.h"
+#include "common.h"
+
+#define BACKTRACE_DEBUG 0
+
+#if BACKTRACE_DEBUG
+#include <execinfo.h>
 
 #define PRINT_SIZE_ 100
 
@@ -59,6 +64,7 @@ static void _signal_handler(int signum)
 
     exit(1);
 }
+#endif
 
 static void sigint_handler(int sig)
 {
@@ -70,16 +76,21 @@ static void sigint_handler(int sig)
 
 int main(int argc, char* argv[])
 {
+#if BACKTRACE_DEBUG
     signal(SIGPIPE, _signal_handler);  // SIGPIPE，管道破裂。
     signal(SIGSEGV, _signal_handler);  // SIGSEGV，非法内存访问
     signal(SIGFPE, _signal_handler);  // SIGFPE，数学相关的异常，如被0除，浮点溢出，等等
     signal(SIGABRT, _signal_handler);  // SIGABRT，由调用abort函数产生，进程非正常退出
-    signal(SIGINT, sigint_handler);//信号处理
+#endif
+
+    signal(SIGINT, sigint_handler);//中断信号处理
 
     spdlog::info("Welcome to spdlog version {}.{}.{}  !", SPDLOG_VER_MAJOR, SPDLOG_VER_MINOR, SPDLOG_VER_PATCH);
+    LcdRgb tft;
 
-    TimerFd timerfd();
-    // Uart serial(xepoll, "/dev/ttyUSB0");
+    tft.fill_screen_solid(0xff0000);
+    // TimerFd timerfd();
+    // Uart serial("/dev/ttyUSB0");
 
     // //初始化文件监控事件并加入事件列表
     Inotify inotify("/tmp/text");

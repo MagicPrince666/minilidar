@@ -79,12 +79,16 @@ LcdRgb::LcdRgb(int fb_num)
 
 LcdRgb::~LcdRgb()
 {
-	close(fb_info_->fd);
-	delete fb_info_;
+	if(fb_info_->fd > 0) {
+		close(fb_info_->fd);
+	}
+	
 	if(bl_fd_) {
 		write(bl_fd_, "1", 1);
 		close(bl_fd_);
 	}
+
+	delete fb_info_;
 }
 
 void LcdRgb::fb_clear_area(int x, int y, int w, int h)

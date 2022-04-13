@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <assert.h>
 
 #include "vl53l0x.h"
 #include "interface.h"
@@ -10,7 +11,7 @@ Vl53l0x::Vl53l0x(std::string device)
     vl53l0x_fd_ = fopen(device.c_str(),"r+");
     if (NULL == vl53l0x_fd_) {
         std::cout << RED << device << " not exists!" << std::endl;
-		exit(-1);
+		assert(vl53l0x_fd_ >= 0);
 	}
 }
 
