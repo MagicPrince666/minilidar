@@ -11,8 +11,8 @@
 #include <stdlib.h>
 #include <sys/inotify.h>
 #include <unistd.h>
-#include <sys/epoll.h>
 #include <sys/stat.h>
+#include <assert.h>
 
 #include <string>
 #include <fstream>
@@ -41,10 +41,8 @@ const char *event_str[EVENT_NUM] =
 Inotify::Inotify(const std::string name)
 {
     fd = inotify_init();
-    if (fd < 0) {
-        fprintf(stderr, "inotify_init failed\n");
-        exit(1);
-    }
+
+    assert(fd >= 0);
 
     //保证文件存在
     if (-1 == access( name.c_str(), F_OK )) {

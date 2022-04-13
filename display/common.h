@@ -52,7 +52,7 @@ struct fb_info
 
 class LcdRgb {
 public:
-	LcdRgb(int fb_num);
+	LcdRgb(int fb_num = 0);
 	~LcdRgb();
 	void fb_update_window(int fd, short x, short y, short w, short h);
 	void fb_sync_gfx(int fd);

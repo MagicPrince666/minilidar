@@ -5,12 +5,11 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <termios.h>
-// #include <asm/ioctls.h>
 #include <sys/ioctl.h>
 #include <string.h>
+#include <assert.h>
 
 #include "uart.h"
-//#include "epoll.h"
 
 #include <iostream>
 
@@ -27,6 +26,7 @@ Uart::Uart(std::string device)
     uart_fd_ = OpenSerial(device.c_str(), BAUDRATE);
     if(uart_fd_ < 0) {
         std::cout <<"can\'t open " << device <<" !" << std::endl;
+        assert(uart_fd_ >= 0);
     } else tcflush(uart_fd_, TCIOFLUSH);//清空串口输入输出缓存
 
     std::string cmd = "WLACC\r\n";

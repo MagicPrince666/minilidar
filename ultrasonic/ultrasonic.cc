@@ -1,16 +1,15 @@
 #include <iostream>
 #include <linux/input.h>
-#include <sys/epoll.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <assert.h>
 #include <stdio.h>
 #include <dirent.h>
 #include <string.h>
 #include <iomanip>
+#include <assert.h>
 
 #include "ultrasonic.h"
 
@@ -34,9 +33,9 @@ GpioKey::GpioKey()
             close(fd);
         }
     }
-    if(key_input_fd_ <= 0) {
-        exit(0);
-    }
+
+    assert(fd >= 0);
+
     init();
 }
 

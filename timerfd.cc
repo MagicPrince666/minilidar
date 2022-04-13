@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <sstream>
 #include <sys/statfs.h>
+#include <assert.h>
 
 #include "timerfd.h"
 #include "vl53l0x.h"
@@ -27,6 +28,7 @@ TimerFd::TimerFd()
 {
     if(!init()) {
       std::cout << "timerfd init failed!" << std::endl;
+      assert(timer_fd_ >= 0);
     }
 
     std::string title = "Huang liquan ";

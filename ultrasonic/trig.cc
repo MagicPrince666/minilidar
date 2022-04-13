@@ -21,12 +21,10 @@ Trig::Trig(Interface *interface) : m_interface_(interface){
         trig_fd_ = open (GPIO_PIN, O_RDWR);
         std::cout << "Init trig pin fd " << trig_fd_ << std::endl;
     }
-    if(trig_fd_ <= 0) {
-        std::cout << "Init trig pin error" << std::endl;
-        exit(0);
-    } else {
-        write(trig_fd_, "0", 1);
-    }
+
+    assert(trig_fd_ >= 0);
+    
+    write(trig_fd_, "0", 1);
 
     trig_thread_ = std::thread([](Trig* pThis){
         pThis->TrigProcess();
