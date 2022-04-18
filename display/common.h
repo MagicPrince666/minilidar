@@ -43,7 +43,7 @@ struct fb_info
 {
 	int fd;
 
-	void *ptr;
+	uint32_t *ptr;
 
 	struct fb_var_screeninfo var;
 	struct fb_fix_screeninfo fix;

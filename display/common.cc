@@ -69,7 +69,7 @@ LcdRgb::LcdRgb(int fb_num)
 			fb_info_->var.xres_virtual, fb_info_->var.yres_virtual,
 			fb_info_->fix.line_length, fb_info_->var.bits_per_pixel);
 
-	void *ptr = mmap(0,
+	uint32_t *ptr = (uint32_t *)mmap(0,
 			fb_info_->var.yres_virtual * fb_info_->fix.line_length,
 			PROT_WRITE | PROT_READ,
 			MAP_SHARED, fd, 0);
@@ -183,7 +183,7 @@ int LcdRgb::FbPutValue(int x, int y, int value, uint32_t maxlen,
 
 void LcdRgb::FbDrawPixel(int x, int y, unsigned color)
 {
-	void *fbmem;
+	uint32_t *fbmem;
 
 	fbmem = fb_info_->ptr;
 	switch(fb_info_->var.bits_per_pixel) {
