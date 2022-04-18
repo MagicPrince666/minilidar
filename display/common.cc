@@ -81,6 +81,7 @@ LcdRgb::LcdRgb(int fb_num)
 
 LcdRgb::~LcdRgb()
 {
+	FillScreenSolid(0x000000);
 	if(fb_info_->fd > 0) {
 		close(fb_info_->fd);
 	}
@@ -109,7 +110,7 @@ void LcdRgb::FbClearArea(int x, int y, int w, int h)
 }
 
 void LcdRgb::FbPutChar(int x, int y, char c,
-		unsigned color)
+		uint32_t color)
 {
 	int j, bits;
 	uint32_t loc;
@@ -146,7 +147,7 @@ void LcdRgb::FbPutChar(int x, int y, char c,
 }
 
 int LcdRgb::FbPutString(int x, int y, const char *s, uint32_t maxlen,
-		int color, bool clear, int clearlen)
+		uint32_t color, bool clear, int clearlen)
 {
 	int w = 0;
 
@@ -162,7 +163,7 @@ int LcdRgb::FbPutString(int x, int y, const char *s, uint32_t maxlen,
 }
 
 int LcdRgb::FbPutValue(int x, int y, int value, uint32_t maxlen,
-		int color, bool clear, int clearlen)
+		uint32_t color, bool clear, int clearlen)
 {
 	int w = 0;
 	char str[40] = {0};
@@ -181,7 +182,7 @@ int LcdRgb::FbPutValue(int x, int y, int value, uint32_t maxlen,
 	return w;
 }
 
-void LcdRgb::FbDrawPixel(int x, int y, unsigned color)
+void LcdRgb::FbDrawPixel(int x, int y, uint32_t color)
 {
 	uint32_t *fbmem;
 
@@ -226,7 +227,7 @@ void LcdRgb::FbDrawPixel(int x, int y, unsigned color)
 	}
 }
 
-void LcdRgb::FbDrawLine(int x1, int y1, int x2, int y2, unsigned color)
+void LcdRgb::FbDrawLine(int x1, int y1, int x2, int y2, uint32_t color)
 {
 	int t; 
 	int xerr = 0,yerr = 0,delta_x, delta_y, distance; 
@@ -261,7 +262,7 @@ void LcdRgb::FbDrawLine(int x1, int y1, int x2, int y2, unsigned color)
 	}  
 }
 
-void LcdRgb::FbDrawCircle(int x, int y, int r, int color)
+void LcdRgb::FbDrawCircle(int x, int y, int r, uint32_t color)
 {
     int a, b, num;
     a = 0;
@@ -300,7 +301,7 @@ void LcdRgb::FillScreenSolid(uint32_t color)
 	}
 }
 
-void LcdRgb::FbDrawRectangle(int x1, int y1, int x2, int y2, unsigned color)
+void LcdRgb::FbDrawRectangle(int x1, int y1, int x2, int y2, uint32_t color)
 {
 	FbDrawLine(x1,y1,x2,y1,color);
 	FbDrawLine(x1,y1,x1,y2,color);

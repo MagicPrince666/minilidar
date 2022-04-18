@@ -92,7 +92,7 @@ int main(int argc, char* argv[])
     tft.FillScreenSolid(0xff0000);
     //std::string title = "Huang liquan ";
     //tft.FbPutString(30, 0, title.c_str(), title.size(), RGB_GOLDEN, true, title.size());
-    tft.FbDrawCircle(120, 120, 120, RGB_GOLDEN);
+    tft.FbDrawCircle(120, 120, 100, RGB_GOLDEN);
     tft.FbDrawLine(0, 120, 239, 120, RGB_GOLDEN);
     tft.FbDrawLine(120, 0, 120, 239, RGB_GOLDEN);
     tft.FbDrawRectangle(10, 10, 230, 230, RGB_GOLDEN);
@@ -105,6 +105,8 @@ int main(int argc, char* argv[])
 
     GpioKey key;
 
-    return MY_EPOLL->EpollLoop();//等待事件触发
+    MY_EPOLL->EpollLoop();//等待事件触发
+
+    return 0;
 
 }

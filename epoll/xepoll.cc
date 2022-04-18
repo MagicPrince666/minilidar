@@ -16,6 +16,9 @@ Epoll::~Epoll(void)
     if (epfd_ > 0) {
         ::close(epfd_);
     }
+    if (!instance_) {
+        delete instance_;
+    }
 }
 
 Epoll *Epoll::Instance()
@@ -53,7 +56,7 @@ int Epoll::EpollDel(int fd)
 bool Epoll::EpoolQuit()
 {
     epoll_loop_ = false;
-    return false;
+    return true;
 }
 
 int Epoll::EpollLoop()
@@ -63,7 +66,7 @@ int Epoll::EpollLoop()
 
         if (nfds_ == -1) {
             ::perror("loop");
-            ::exit(1);
+            //::exit(1);
         }
 
         // if (nfds_ == 0) {

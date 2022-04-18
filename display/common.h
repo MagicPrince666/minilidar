@@ -73,7 +73,7 @@ public:
 	 * @return int 
 	 */
 	int FbPutString(int x, int y, const char *s, uint32_t maxlen,
-			int color, bool clear, int clearlen);
+			uint32_t color, bool clear, int clearlen);
 	/**
 	 * @brief 将值打印到屏幕
 	 * @param x 
@@ -86,7 +86,7 @@ public:
 	 * @return int 
 	 */
 	int FbPutValue(int x, int y, int value, uint32_t maxlen,
-			int color, bool clear, int clearlen);
+			uint32_t color, bool clear, int clearlen);
 
 	/**
 	 * @brief 画点
@@ -103,7 +103,7 @@ public:
 	 * @param x2 
 	 * @param y2 
 	 */
-	void FbDrawLine(int x1, int y1, int x2, int y2, unsigned color);
+	void FbDrawLine(int x1, int y1, int x2, int y2, uint32_t color);
 
 	/**
 	 * @brief 画圆
@@ -112,7 +112,7 @@ public:
 	 * @param r 
 	 * @param color 
 	 */
-	void FbDrawCircle(int x, int y, int r, int color);
+	void FbDrawCircle(int x, int y, int r, uint32_t color);
 
 	/**
 	 * @brief 清空区域
@@ -127,7 +127,7 @@ public:
 	 * @brief 画矩形
 	 * (x1,y1),(x2,y2):矩形的对角坐标
 	 */
-	void FbDrawRectangle(int x1, int y1, int x2, int y2, unsigned color);
+	void FbDrawRectangle(int x1, int y1, int x2, int y2, uint32_t color);
 
 private:
 	void FbPutChar(int x, int y, char c,
