@@ -9,6 +9,7 @@
 
 #include "epoller.h"
 
+#ifndef __APPLE__
 #define MAX_CONNECT_NUM 5
 
 UdsHandler::UdsHandler(const char *sock_path)
@@ -96,3 +97,4 @@ int UdsHandler::handle(epoll_event e)
 	return 0;
 }
 
+#endif

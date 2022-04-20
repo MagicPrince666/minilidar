@@ -16,7 +16,7 @@
  * - [ ] Add support for windows equivalent
  */
 #pragma once
-
+#ifndef __APPLE__
 #include <string>
 #include <netdb.h>
 #include <sys/socket.h>
@@ -153,3 +153,4 @@ private:
 	char *buffer = NULL;
 };
 
+#endif

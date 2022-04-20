@@ -7,13 +7,14 @@
 #include "spdlog/cfg/env.h"  // support for loading levels from the environment variable
 #include "spdlog/fmt/ostr.h" // support for user defined types
 
-#include "uart.h"
 #include "xepoll.h"
-#include "timerfd.h"
-#include "inotify.h"
-#include "gpio_key.h"
-#include "interface.h"
-#include "common.h"
+#include "socket.h"
+// #include "uart.h"
+// #include "timerfd.h"
+// #include "inotify.h"
+// #include "gpio_key.h"
+// #include "interface.h"
+// #include "common.h"
 
 #define BACKTRACE_DEBUG 0
 
@@ -87,15 +88,6 @@ int main(int argc, char* argv[])
     signal(SIGINT, sigint_handler);//中断信号处理
 
     spdlog::info("Welcome to spdlog version {}.{}.{}  !", SPDLOG_VER_MAJOR, SPDLOG_VER_MINOR, SPDLOG_VER_PATCH);
-    LcdRgb tft;
-
-    tft.FillScreenSolid(0xff0000);
-    //std::string title = "Huang liquan ";
-    //tft.FbPutString(30, 0, title.c_str(), title.size(), RGB_GOLDEN, true, title.size());
-    tft.FbDrawCircle(120, 120, 100, RGB_GOLDEN);
-    tft.FbDrawLine(0, 120, 239, 120, RGB_GOLDEN);
-    tft.FbDrawLine(120, 0, 120, 239, RGB_GOLDEN);
-    tft.FbDrawRectangle(10, 10, 230, 230, RGB_GOLDEN);
 
     // TimerFd timerfd();
     // Uart serial("/dev/ttyUSB0");
@@ -103,7 +95,8 @@ int main(int argc, char* argv[])
     // //初始化文件监控事件并加入事件列表
     // Inotify inotify("/tmp/text");
 
-    GpioKey key;
+    // GpioKey key;
+    Socket sk;
 
     MY_EPOLL->EpollLoop();//等待事件触发
 

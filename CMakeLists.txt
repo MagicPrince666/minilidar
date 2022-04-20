@@ -1,7 +1,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 option(EXAMPLE "shall we complie example" on)
-INCLUDE(build_for_v831)
+INCLUDE(build_for_host)
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
@@ -29,31 +29,32 @@ ELSEIF (UNIX)
     add_subdirectory(epoll)
 ENDIF ()
 
-add_subdirectory(imu)
-add_subdirectory(input)
-add_subdirectory(distance)
-add_subdirectory(ultrasonic)
-add_subdirectory(moto)
-add_subdirectory(display)
+#add_subdirectory(imu)
+# add_subdirectory(input)
+#add_subdirectory(distance)
+# add_subdirectory(ultrasonic)
+#add_subdirectory(moto)
+# add_subdirectory(display)
 add_subdirectory(lib_json)
 
 set(EXEC_NAME minilidar)
 
 add_executable(${EXEC_NAME} main.cc
-    uart.cc
-    inotify.cc
-    timerfd.cc
+#    uart.cc
+#    inotify.cc
+#    timerfd.cc
     utils.cc
+    socket.cc
 )
 
 target_link_libraries(${EXEC_NAME} 
     multiplexing
-    distance
-    imu
-    moto
-    display
-    ultrasonic
+#    distance
+#    imu
+#    moto
+#    display
+#    ultrasonic
     json
-    input
+#    input
 )
 

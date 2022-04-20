@@ -1,7 +1,11 @@
 #pragma once
 
 #include <sys/socket.h>
+#ifndef __APPLE__
 #include <sys/epoll.h>
+#else
+#include <sys/event.h>
+#endif
 
 #include <functional>
 #include <string>
@@ -28,7 +32,15 @@ class Epoll {
 
  private:
   Epoll();
+#ifndef __APPLE__
   struct epoll_event ev_, events_[MAXEVENTS];
+#else
+  const int kReadEvent = 1;
+  const int kWriteEvent = 2;
+  struct kevent ev_[2];
+  int events_;
+  struct kevent activeEvs_[MAXEVENTS];
+#endif
   int epfd_;
   int nfds_;
   bool epoll_loop_{true};

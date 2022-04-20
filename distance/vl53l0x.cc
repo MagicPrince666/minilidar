@@ -9,9 +9,9 @@
 Vl53l0x::Vl53l0x(std::string device) 
 : device_(device) {
     vl53l0x_fd_ = fopen(device.c_str(),"r+");
-    if (NULL == vl53l0x_fd_) {
+    if (nullptr == vl53l0x_fd_) {
         std::cout << RED << device << " not exists!" << std::endl;
-		assert(vl53l0x_fd_ >= 0);
+		assert(vl53l0x_fd_ == nullptr);
 	}
 }
 

@@ -5,7 +5,9 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <dirent.h>
+#ifndef __APPLE__
 #include <linux/input.h>
+#endif
 
 #include "gpio_key.h"
 #include "xepoll.h"
