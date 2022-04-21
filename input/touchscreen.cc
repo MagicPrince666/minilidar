@@ -1,6 +1,4 @@
 #include <iostream>
-#include <linux/input.h>
-#include <sys/epoll.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -10,6 +8,8 @@
 #include <stdio.h>
 #include <dirent.h>
 #include <string.h>
+
+#include <linux/input.h>
 
 #include "touchscreen.h"
 #include "utils.h"

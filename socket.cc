@@ -6,6 +6,7 @@
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #include "xepoll.h"
 #include "socket.h"
