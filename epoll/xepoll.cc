@@ -10,10 +10,10 @@
 Epoll *Epoll::instance_ = nullptr;
 
 Epoll::Epoll(void) {
-#ifdef __APPLE__
-    epfd_ = kqueue();
-#else
+#ifndef __APPLE__
     epfd_ = ::epoll_create(EPOLL_FD_SETSIZE);
+#else
+    epfd_ = kqueue();
 #endif
 }
 
@@ -50,21 +50,11 @@ int Epoll::EpollAdd(int fd, std::function<void()> handler)
     ev_.events     = EPOLLIN;
     return ::epoll_ctl(epfd_, EPOLL_CTL_ADD, fd, &ev_);
 #else 
-    int n = 0;
-    bool modify = false;
-    if (events_ & kReadEvent) {
-        EV_SET(&ev_[n++], fd, EVFILT_READ, EV_ADD|EV_ENABLE, 0, 0, (void*)(intptr_t)fd);
-    } else if (modify){
-        EV_SET(&ev_[n++], fd, EVFILT_READ, EV_DELETE, 0, 0, (void*)(intptr_t)fd);
-    }
-    if (events_ & kWriteEvent) {
-        EV_SET(&ev_[n++], fd, EVFILT_WRITE, EV_ADD|EV_ENABLE, 0, 0, (void*)(intptr_t)fd);
-    } else if (modify){
-        EV_SET(&ev_[n++], fd, EVFILT_WRITE, EV_DELETE, 0, 0, (void*)(intptr_t)fd);
-    }
-    printf("%s fd %d events read %d write %d\n",
-           modify ? "mod" : "add", fd, events_ & kReadEvent, events_ & kWriteEvent);
-    return kevent(epfd_, ev_, n, NULL, 0, NULL);
+    int num = 0;
+    EV_SET(&ev_[num++], fd, EVFILT_READ, EV_ADD|EV_ENABLE, 0, 0, (void*)(intptr_t)fd);
+    EV_SET(&ev_[num++], fd, EVFILT_WRITE, EV_ADD|EV_ENABLE, 0, 0, (void*)(intptr_t)fd);
+    return num;
+    //return kevent(epfd_, ev_, n, NULL, 0, NULL);
 #endif
 }
 
@@ -73,6 +63,10 @@ int Epoll::EpollDel(int fd)
 #ifndef __APPLE__
     ev_.data.fd = fd;
     ::epoll_ctl(epfd_, EPOLL_CTL_DEL, fd, NULL);
+#else
+    int num = 0;
+    EV_SET(&ev_[num++], fd, EVFILT_READ, EV_DELETE, 0, 0, (void*)(intptr_t)fd);
+    EV_SET(&ev_[num++], fd, EVFILT_WRITE, EV_DELETE, 0, 0, (void*)(intptr_t)fd);
 #endif
     // erase: 0 不存在元素 1 存在元素
     return listeners_.erase(fd) - 1;
@@ -93,9 +87,9 @@ int Epoll::EpollLoop()
     while (epoll_loop_) {
         
 #ifndef __APPLE__
-        nfds_ = ::epoll_wait(epfd_, events_, MAXEVENTS, 1000);
+        nfds_ = ::epoll_wait(epfd_, events_, MAXEVENTS, timeout.tv_sec*1000 + timeout.tv_nsec/1000000);
 #else
-        nfds_ = kevent(epfd_, NULL, 0, activeEvs_, MAXEVENTS, &timeout);
+        nfds_ = kevent(epfd_, ev_, MAXEVENTS, activeEvs_, MAXEVENTS, &timeout);
 #endif
 
         if (nfds_ == -1) {
@@ -103,9 +97,9 @@ int Epoll::EpollLoop()
             //::exit(1);
         }
 
-        // if (nfds_ == 0) {
-        //   std::cout << "Epoll time out" << std::endl;
-        // }
+        if (nfds_ == 0) {
+          std::cout << "Epoll time out" << std::endl;
+        }
 
         for (int i = 0; i < nfds_; i++) {
             // 有消息可读取
@@ -123,6 +117,7 @@ int Epoll::EpollLoop()
             int fd = (int)(intptr_t)activeEvs_[i].udata;
             int events = activeEvs_[i].filter;
             if (events == EVFILT_READ) {
+                std::cout << "read data from fd:" << fd << std::endl;
                 auto handle_it = listeners_.find(fd);
                 if (handle_it != listeners_.end()) {
                     handle_it->second();
@@ -130,6 +125,7 @@ int Epoll::EpollLoop()
                     std::cout << "can not find the fd:" << fd << std::endl;
                 }
             } else if (events == EVFILT_WRITE) {
+                std::cout << "write data to fd:" << fd << std::endl;
             } else {
                 assert("unknown event");
             }

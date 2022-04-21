@@ -35,10 +35,7 @@ class Epoll {
 #ifndef __APPLE__
   struct epoll_event ev_, events_[MAXEVENTS];
 #else
-  const int kReadEvent = 1;
-  const int kWriteEvent = 2;
-  struct kevent ev_[2];
-  int events_;
+  struct kevent ev_[MAXEVENTS];
   struct kevent activeEvs_[MAXEVENTS];
 #endif
   int epfd_;
