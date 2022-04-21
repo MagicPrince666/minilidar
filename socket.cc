@@ -18,11 +18,15 @@ Socket::Socket() {
     addr.sin_family = AF_INET;
     addr.sin_port = htons(port);
     addr.sin_addr.s_addr = INADDR_ANY;
+
     int r = ::bind(listenfd_, (struct sockaddr *)&addr, sizeof(struct sockaddr));
     assert(r >= 0);
+
     r = listen(listenfd_, 20);
     assert(r >= 0);
+
     printf("fd %d listening at %d\n", listenfd_, port);
+
     MY_EPOLL->EpollAdd(listenfd_, std::bind(&Socket::handleRead, this));
 }
 
@@ -43,14 +47,15 @@ void Socket::handleAccept() {
     int r = getpeername(cfd, (sockaddr*)&peer, &alen);
     assert(r >= 0);
     printf("accept a connection from %s\n", inet_ntoa(raddr.sin_addr));
-    // updateEvents(cfd, 1|2, false);
+
+    MY_EPOLL->EpollAdd(cfd, std::bind(&Socket::handleRead, this));
 }
 
 void Socket::handleRead() {
     char buf[4096];
     int n = 0;
     while ((n=::read(listenfd_, buf, sizeof buf)) > 0) {
-        printf("read %d bytes\n", n);
+        std::cout <<"read " << n << " bytes" << std::endl;
         int r = ::write(listenfd_, buf, n); //写出读取的数据
         //实际应用中，写出数据可能会返回EAGAIN，此时应当监听可写事件，当可写时再把数据写出
         assert(r >= 0);
@@ -58,4 +63,9 @@ void Socket::handleRead() {
     if (n < 0 && (errno == EAGAIN || errno == EWOULDBLOCK))
         return;
     //实际应用中，n<0应当检查各类错误，如EINTR
+}
+
+void Socket::handleWrite() {
+    //实际应用应当实现可写时写出数据，无数据可写才关闭可写事件
+    // updateEvents(listenfd_, kReadEvent, true);
 }

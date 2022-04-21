@@ -39,7 +39,6 @@ class Epoll {
   struct kevent activeEvs_[MAXEVENTS];
 #endif
   int epfd_;
-  int nfds_;
   bool epoll_loop_{true};
   static Epoll *instance_;
   std::unordered_map<int, std::function<void()>> listeners_;

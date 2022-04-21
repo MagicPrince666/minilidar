@@ -10,6 +10,7 @@ public:
     ~Socket();
     void handleAccept();
     void handleRead();
+    void handleWrite();
 private:
     int listenfd_ = -1;
     uint32_t port = 99;

@@ -15,6 +15,7 @@ Epoll::Epoll(void) {
 #else
     epfd_ = kqueue();
 #endif
+    assert(epfd_ >= 0);
 }
 
 Epoll::~Epoll(void)
@@ -51,8 +52,8 @@ int Epoll::EpollAdd(int fd, std::function<void()> handler)
     return ::epoll_ctl(epfd_, EPOLL_CTL_ADD, fd, &ev_);
 #else 
     int num = 0;
-    EV_SET(&ev_[num++], fd, EVFILT_READ, EV_ADD|EV_ENABLE, 0, 0, (void*)(intptr_t)fd);
-    EV_SET(&ev_[num++], fd, EVFILT_WRITE, EV_ADD|EV_ENABLE, 0, 0, (void*)(intptr_t)fd);
+    EV_SET(&ev_[num++], fd, EVFILT_READ, EV_ADD|EV_ENABLE, 0, 0, &fd);
+    EV_SET(&ev_[num++], fd, EVFILT_WRITE, EV_ADD|EV_ENABLE, 0, 0, &fd);
     return num;
     //return kevent(epfd_, ev_, n, NULL, 0, NULL);
 #endif
@@ -65,8 +66,8 @@ int Epoll::EpollDel(int fd)
     ::epoll_ctl(epfd_, EPOLL_CTL_DEL, fd, NULL);
 #else
     int num = 0;
-    EV_SET(&ev_[num++], fd, EVFILT_READ, EV_DELETE, 0, 0, (void*)(intptr_t)fd);
-    EV_SET(&ev_[num++], fd, EVFILT_WRITE, EV_DELETE, 0, 0, (void*)(intptr_t)fd);
+    EV_SET(&ev_[num++], fd, EVFILT_READ, EV_DELETE, 0, 0, &fd);
+    EV_SET(&ev_[num++], fd, EVFILT_WRITE, EV_DELETE, 0, 0, &fd);
 #endif
     // erase: 0 不存在元素 1 存在元素
     return listeners_.erase(fd) - 1;
@@ -87,21 +88,21 @@ int Epoll::EpollLoop()
     while (epoll_loop_) {
         
 #ifndef __APPLE__
-        nfds_ = ::epoll_wait(epfd_, events_, MAXEVENTS, timeout.tv_sec*1000 + timeout.tv_nsec/1000000);
+        int nfds = ::epoll_wait(epfd_, events_, MAXEVENTS, timeout.tv_sec*1000 + timeout.tv_nsec/1000000);
 #else
-        nfds_ = kevent(epfd_, ev_, MAXEVENTS, activeEvs_, MAXEVENTS, &timeout);
+        int nfds = kevent(epfd_, ev_, 2, activeEvs_, MAXEVENTS, &timeout);
 #endif
 
-        if (nfds_ == -1) {
+        if (nfds == -1) {
             ::perror("loop");
             //::exit(1);
         }
 
-        if (nfds_ == 0) {
+        if (nfds == 0) {
           std::cout << "Epoll time out" << std::endl;
         }
 
-        for (int i = 0; i < nfds_; i++) {
+        for (int i = 0; i < nfds; i++) {
             // 有消息可读取
 #ifndef __APPLE__
             if (events_[i].events & EPOLLIN) {
