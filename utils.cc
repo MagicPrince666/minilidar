@@ -57,3 +57,11 @@ std::string Utils::getCurrentTime0() {
  
     return str;
 }
+
+std::string Utils::ReadFileIntoString(const std::string& path) {
+    std::ifstream input_file(path);
+    if (!input_file.is_open()) {
+        return "";
+    }
+    return std::string((std::istreambuf_iterator<char>(input_file)), std::istreambuf_iterator<char>());
+}
