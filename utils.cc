@@ -40,3 +40,20 @@ void Utils::getFiles(std::string path, std::vector<std::string>& files)
         files.push_back(full_path);
 	}
 }
+
+std::string Utils::getCurrentTime0() {
+    std::time_t result = std::time(nullptr);
+
+    auto sec = std::chrono::seconds(result);
+    std::chrono::time_point<std::chrono::system_clock> now(sec);
+ 
+    auto timet = std::chrono::system_clock::to_time_t(now);
+    auto localTime = *std::gmtime(&timet);
+ 
+    std::stringstream ss;
+    std::string str;
+    ss << std::put_time(&localTime, "%Y/%m/%d-%H:%M:%S");
+    ss >> str;
+ 
+    return str;
+}
