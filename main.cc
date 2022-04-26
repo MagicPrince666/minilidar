@@ -8,7 +8,7 @@
 #include "spdlog/fmt/ostr.h" // support for user defined types
 
 #include "xepoll.h"
-#include "socket.h"
+#include "udp_server.h"
 #include "utils.h"
 // #include "uart.h"
 // #include "timerfd.h"
@@ -97,7 +97,7 @@ int main(int argc, char* argv[])
     // Inotify inotify("/tmp/text");
 
     // GpioKey key;
-    Socket sk;
+    UdpServer udp_server;
 
     MY_EPOLL->EpollLoop();//等待事件触发
 

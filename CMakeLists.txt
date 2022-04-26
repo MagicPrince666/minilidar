@@ -45,16 +45,17 @@ add_executable(${EXEC_NAME} main.cc
     timerfd.cc
     utils.cc
     socket.cc
+    udp_server.cc
 )
 
 target_link_libraries(${EXEC_NAME} 
     multiplexing
+    json
+    input
     distance
     imu
     moto
     display
     ultrasonic
-    json
-    input
 )
 

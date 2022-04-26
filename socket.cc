@@ -12,12 +12,11 @@
 #include "socket.h"
 
 Socket::Socket() {
-    port = 99;
     listenfd_ = socket(AF_INET, SOCK_STREAM, 0);
     struct sockaddr_in addr;
     memset(&addr, 0, sizeof addr);
     addr.sin_family = AF_INET;
-    addr.sin_port = htons(port);
+    addr.sin_port = htons(port_);
     addr.sin_addr.s_addr = INADDR_ANY;
 
     int r = ::bind(listenfd_, (struct sockaddr *)&addr, sizeof(struct sockaddr));
@@ -26,12 +25,13 @@ Socket::Socket() {
     r = listen(listenfd_, 20);
     assert(r >= 0);
 
-    printf("fd %d listening at %d\n", listenfd_, port);
+    printf("fd %d listening at %d\n", listenfd_, port_);
 
     MY_EPOLL->EpollAdd(listenfd_, std::bind(&Socket::handleRead, this));
 }
 
 Socket::~Socket() {
+    MY_EPOLL->EpollDel(listenfd_);
     if(listenfd_ > 0) {
         close(listenfd_);
     }

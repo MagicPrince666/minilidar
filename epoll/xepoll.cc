@@ -54,7 +54,7 @@ int Epoll::EpollAdd(int fd, std::function<void()> handler)
 #else 
     int num = 0;
     EV_SET(&ev_[num++], fd, EVFILT_READ, EV_ADD|EV_ENABLE, 0, 0, &fd);
-    EV_SET(&ev_[num++], fd, EVFILT_WRITE, EV_ADD|EV_ENABLE, 0, 0, &fd);
+    //EV_SET(&ev_[num++], fd, EVFILT_WRITE, EV_ADD|EV_ENABLE, 0, 0, &fd);
     return num;
     //return kevent(epfd_, ev_, n, NULL, 0, NULL);
 #endif
@@ -68,7 +68,7 @@ int Epoll::EpollDel(int fd)
 #else
     int num = 0;
     EV_SET(&ev_[num++], fd, EVFILT_READ, EV_DELETE, 0, 0, &fd);
-    EV_SET(&ev_[num++], fd, EVFILT_WRITE, EV_DELETE, 0, 0, &fd);
+    //EV_SET(&ev_[num++], fd, EVFILT_WRITE, EV_DELETE, 0, 0, &fd);
 #endif
     // erase: 0 不存在元素 1 存在元素
     return listeners_.erase(fd) - 1;
@@ -100,7 +100,8 @@ int Epoll::EpollLoop()
         }
 
         if (nfds == 0) {
-          std::cout << "Epoll time out" << std::endl;
+          // std::cout << "Epoll time out" << std::endl;
+          return 0;
         }
 
         for (int i = 0; i < nfds; i++) {
