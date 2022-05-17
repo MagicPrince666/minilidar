@@ -15,7 +15,7 @@
 // #include "inotify.h"
 // #include "gpio_key.h"
 // #include "interface.h"
-// #include "common.h"
+#include "common.h"
 
 #define BACKTRACE_DEBUG 0
 
@@ -93,11 +93,13 @@ int main(int argc, char* argv[])
     // TimerFd timerfd();
     // Uart serial("/dev/ttyUSB0");
 
+    LcdRgb lcd;
+
     // //初始化文件监控事件并加入事件列表
     // Inotify inotify("/tmp/text");
 
     // GpioKey key;
-    UdpServer udp_server;
+    // UdpServer udp_server;
 
     MY_EPOLL->EpollLoop();//等待事件触发
 

@@ -53,7 +53,7 @@ int TouchScreen::ReadTouchData(void)
     struct input_event	event;
     int ret = read(key_input_fd_, &event, sizeof(struct input_event));
     if(ret > 0) {
-        time	= event.time;
+        time.tv_usec	= event.input_event_usec;
         switch(event.type) {
             case EV_SYN:    // 分隔
             break;

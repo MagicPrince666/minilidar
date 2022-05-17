@@ -52,6 +52,7 @@ LcdRgb::LcdRgb(int fb_num)
 	// 	printf("Failed to set graphics mode on tty1\n");
 	if(access(BL_POWER, F_OK) == 0) {
         bl_fd_ = open (BL_POWER, O_RDWR);
+		ASSERT(bl_fd_ >= 0);
 		write(bl_fd_, "0", 1);
     }
 

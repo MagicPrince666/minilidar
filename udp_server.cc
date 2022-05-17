@@ -1,6 +1,7 @@
 #include <iostream>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <string.h>
 #include <assert.h>
 
 #include "udp_server.h"

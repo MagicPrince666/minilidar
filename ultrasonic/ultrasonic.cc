@@ -58,12 +58,13 @@ int Ultrasonic::IRKey(void)
             // std::cout << "Time = " << key.time.tv_sec << "." << (key.time.tv_usec)/1000 << " s" <<std::endl;
 
             if(key.value == 1) { // 记录开始时间
-                last_time_ = key.time;
+                last_time_.tv_sec = key.input_event_sec;
+                last_time_.tv_usec = key.input_event_usec;
             } else {
                 // 换算距离
                 double time = 0.0;
                 double starttime = last_time_.tv_sec * 1000000 + last_time_.tv_usec;
-                double endtime = key.time.tv_sec * 1000000 + key.time.tv_usec;
+                double endtime = key.input_event_sec * 1000000 + key.input_event_usec;
 
                 time = (endtime - starttime) * 0.0001;
 

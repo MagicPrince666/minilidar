@@ -7,3 +7,10 @@
 3. 舵机控制
 
 4. fb显示
+
+# 编译
+```
+$ mkdir build
+$ cd build
+$ cmake -DCMAKE_TOOLCHAIN_FILE=cmake/build_for_h3.cmake ..
+```
