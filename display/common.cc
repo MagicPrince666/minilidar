@@ -36,6 +36,7 @@
 
 #include "common.h"
 #include "font_8x8.h"
+
 #define MIN(x,y)		((x)>(y)?(y):(x))
 #define MAX(x,y)		((x)>(y)?(x):(y))
 
@@ -70,8 +71,8 @@ LcdRgb::LcdRgb(int fb_num)
 			fb_info_->var.xres_virtual, fb_info_->var.yres_virtual,
 			fb_info_->fix.line_length, fb_info_->var.bits_per_pixel);
 
-	uint32_t *ptr = (uint32_t *)mmap(0,
-			fb_info_->var.yres_virtual * fb_info_->fix.line_length,
+	uint32_t *ptr = (uint32_t *)mmap(nullptr,
+			fb_info_->fix.smem_len,
 			PROT_WRITE | PROT_READ,
 			MAP_SHARED, fd, 0);
 
