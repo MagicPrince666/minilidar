@@ -84,6 +84,13 @@ LcdRgb::LcdRgb(int fb_num)
 LcdRgb::~LcdRgb()
 {
 	FillScreenSolid(0x000000);
+
+	if(fb_info_->ptr) {
+		int stat = munmap(fb_info_->ptr, fb_info_->fix.smem_len);
+		if (stat < 0) {
+			perror ("Error munmap'ing framebuffer device");
+		}
+	}
 	if(fb_info_->fd > 0) {
 		close(fb_info_->fd);
 	}
