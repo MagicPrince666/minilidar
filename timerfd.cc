@@ -23,9 +23,9 @@ TimerFd::TimerFd()
       std::cout << "timerfd init failed!" << std::endl;
       assert(timer_fd_ >= 0);
     }
-    // vl53l0x_ = new Vl53l0x;
-    // mpu6050_ = new Mpu6050;
-    lcd_ = new LcdRgb(0);
+    // vl53l0x_ = new (std::nothrow)Vl53l0x;
+    // mpu6050_ = new (std::nothrow)Mpu6050;
+    lcd_ = new (std::nothrow) LcdRgb(0);
     std::string title = "Huang liquan ";
 	title += CurrentTime();
     lcd_->FillScreenSolid(0x0000ff);

@@ -8,9 +8,15 @@
 
 4. fb显示
 
-# 编译
+# 编译全志H3
 ```
 $ mkdir build
 $ cd build
 $ cmake -DCMAKE_TOOLCHAIN_FILE=cmake/build_for_h3.cmake ..
+```
+# 编译全志V831
+```
+$ mkdir build
+$ cd build
+$ cmake -DCMAKE_TOOLCHAIN_FILE=cmake/build_for_v831.cmake ..
 ```

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <new>
 #include <sys/socket.h>
 #include <sys/event.h>
 #include <netinet/in.h>
@@ -31,7 +32,7 @@ Kqueue::~Kqueue(void)
 Kqueue *Kqueue::Instance()
 {
     if (!instance_) {
-        instance_ = new Kqueue();
+        instance_ = new (std::nothrow)Kqueue();
     }
     return instance_;
 }

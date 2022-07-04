@@ -113,7 +113,7 @@ int Uart::RecvData(char* bufin)
 
 bool Uart::UartLoop()
 {
-    char* buf = new char[1024];
+    char* buf = new (std::nothrow)char[1024];
     while(true) {
         int len = RecvData(buf);
         if(len > 0) {
@@ -128,7 +128,7 @@ bool Uart::UartLoop()
 
 bool Uart::UartRead()
 {
-    char* buf = new char[1024];
+    char* buf = new (std::nothrow)char[1024];
     int len = read(uart_fd_, buf, 1024);
     buf[len] = 0;
     std::cout << buf << std::endl;

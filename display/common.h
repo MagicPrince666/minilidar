@@ -55,6 +55,8 @@ public:
 	LcdRgb(int fb_num = 0);
 	~LcdRgb();
 
+	bool Init();
+
 	/**
 	 * @brief 清除屏幕
 	 * @param color 填充颜色

@@ -31,8 +31,11 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 
+#include <fcntl.h>
+
 #include <linux/fb.h>
-#include <linux/kd.h>
+
+#include <new>
 
 #include "common.h"
 #include "font_8x8.h"
@@ -40,17 +43,16 @@
 #define MIN(x,y)		((x)>(y)?(y):(x))
 #define MAX(x,y)		((x)>(y)?(x):(y))
 
+#define MMAP_PATH	"/dev/mem"
+
 #define BL_POWER "/sys/class/backlight/backlight/bl_power"
 
 LcdRgb::LcdRgb(int fb_num)
 {
 	char str[64];
 	int fd = -1;
-	fb_info_ = new fb_info;
-	//int tty = open("/dev/tty1", O_RDWR);
+	fb_info_ = new (std::nothrow)fb_info;
 
-	// if(ioctl(tty, KDSETMODE, KD_GRAPHICS) == -1)
-	// 	printf("Failed to set graphics mode on tty1\n");
 	if(access(BL_POWER, F_OK) == 0) {
         bl_fd_ = open (BL_POWER, O_RDWR);
 		ASSERT(bl_fd_ >= 0);
@@ -71,10 +73,14 @@ LcdRgb::LcdRgb(int fb_num)
 			fb_info_->var.xres_virtual, fb_info_->var.yres_virtual,
 			fb_info_->fix.line_length, fb_info_->var.bits_per_pixel);
 
-	uint32_t *ptr = (uint32_t *)mmap(nullptr,
-			fb_info_->fix.smem_len,
+	/*计算屏幕缓冲区大小*/  
+    uint64_t screensize = fb_info_->var.xres * fb_info_->var.yres * fb_info_->var.bits_per_pixel / 8;
+	
+	uint32_t *ptr = (uint32_t *)mmap(0,
+			screensize,
 			PROT_WRITE | PROT_READ,
 			MAP_SHARED, fd, 0);
+	printf("ptr %p\n", ptr);
 
 	ASSERT(ptr != MAP_FAILED);
 
@@ -83,7 +89,7 @@ LcdRgb::LcdRgb(int fb_num)
 
 LcdRgb::~LcdRgb()
 {
-	FillScreenSolid(0x000000);
+	FillScreenSolid(0x0);
 
 	if(fb_info_->ptr) {
 		int stat = munmap(fb_info_->ptr, fb_info_->fix.smem_len);
@@ -101,6 +107,11 @@ LcdRgb::~LcdRgb()
 	}
 
 	delete fb_info_;
+}
+
+bool Init()
+{
+	return false;
 }
 
 void LcdRgb::FbClearArea(int x, int y, int w, int h)

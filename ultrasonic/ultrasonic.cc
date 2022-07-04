@@ -1,5 +1,6 @@
 #include <iostream>
 #include <linux/input.h>
+#include <linux/types.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -58,13 +59,21 @@ int Ultrasonic::IRKey(void)
             // std::cout << "Time = " << key.time.tv_sec << "." << (key.time.tv_usec)/1000 << " s" <<std::endl;
 
             if(key.value == 1) { // 记录开始时间
+#if defined(__GLIBC__) && !defined(__UCLIBC__) && !defined(__MUSL__)
+                last_time_ = key.time;
+#else
                 last_time_.tv_sec = key.input_event_sec;
                 last_time_.tv_usec = key.input_event_usec;
+#endif
             } else {
                 // 换算距离
                 double time = 0.0;
                 double starttime = last_time_.tv_sec * 1000000 + last_time_.tv_usec;
+#if defined(__GLIBC__) && !defined(__UCLIBC__) && !defined(__MUSL__)
+                double endtime = key.time.tv_sec * 1000000 + key.time.tv_usec;
+#else
                 double endtime = key.input_event_sec * 1000000 + key.input_event_usec;
+#endif
 
                 time = (endtime - starttime) * 0.0001;
 

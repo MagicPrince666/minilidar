@@ -10,6 +10,7 @@
 #include <string.h>
 
 #include <linux/input.h>
+#include <linux/types.h>
 
 #include "touchscreen.h"
 #include "utils.h"
@@ -53,7 +54,11 @@ int TouchScreen::ReadTouchData(void)
     struct input_event	event;
     int ret = read(key_input_fd_, &event, sizeof(struct input_event));
     if(ret > 0) {
+#if defined(__GLIBC__) && !defined(__UCLIBC__) && !defined(__MUSL__)
+        time	= event.time;
+#else
         time.tv_usec	= event.input_event_usec;
+#endif
         switch(event.type) {
             case EV_SYN:    // 分隔
             break;

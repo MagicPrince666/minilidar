@@ -6,6 +6,7 @@
 #include <iomanip>
 #include <iostream>
 #include <string>
+#include <new>
 
 #include "xepoll.h"
 Epoll *Epoll::instance_ = nullptr;
@@ -32,7 +33,7 @@ Epoll::~Epoll(void)
 Epoll *Epoll::Instance()
 {
     if (!instance_) {
-        instance_ = new Epoll();
+        instance_ = new (std::nothrow)Epoll();
     }
     return instance_;
 }
