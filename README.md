@@ -20,3 +20,10 @@ $ mkdir build
 $ cd build
 $ cmake -DCMAKE_TOOLCHAIN_FILE=cmake/build_for_v831.cmake ..
 ```
+
+# 编译全志f1c100s
+```
+$ mkdir build
+$ cd build
+$ cmake -DCMAKE_TOOLCHAIN_FILE=cmake/build_for_f1c100s.cmake ..
+```
