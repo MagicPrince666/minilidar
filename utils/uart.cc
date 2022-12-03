@@ -35,7 +35,7 @@ Uart::Uart(std::string device)
     // 绑定回调函数
     if (uart_fd_ > 0) {
         std::cout << "Bind epoll" << std::endl;
-        MY_EPOLL->EpollAdd(uart_fd_, std::bind(&Uart::UartLoop, this));
+        MY_EPOLL.EpollAdd(uart_fd_, std::bind(&Uart::UartLoop, this));
     }
 }
 
@@ -44,7 +44,7 @@ Uart::~Uart(void)
     std::cout << "uart deinit" << std::endl;
 
     if(uart_fd_ > 0) {
-        MY_EPOLL->EpollDel(uart_fd_);
+        MY_EPOLL.EpollDel(uart_fd_);
         close(uart_fd_);
     }
 }

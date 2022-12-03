@@ -29,12 +29,12 @@ UdpServer::UdpServer() {
 
     std::cout << "fd " << listenfd_ << " listening at " << port_ << std::endl;
 
-    MY_EPOLL->EpollAdd(listenfd_, std::bind(&UdpServer::HandleSocket, this));
+    MY_EPOLL.EpollAdd(listenfd_, std::bind(&UdpServer::HandleSocket, this));
 }
 
 UdpServer::~UdpServer() {
     if(listenfd_ > 0) {
-        MY_EPOLL->EpollDel(listenfd_);
+        MY_EPOLL.EpollDel(listenfd_);
         close(listenfd_);
     }
 }

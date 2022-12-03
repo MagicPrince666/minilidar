@@ -35,7 +35,7 @@ TimerFd::TimerFd()
 TimerFd::~TimerFd()
 {
     if (timer_fd_) {
-        MY_EPOLL->EpollDel(timer_fd_);
+        MY_EPOLL.EpollDel(timer_fd_);
         close(timer_fd_);
     }
     if(vl53l0x_) {
@@ -76,7 +76,7 @@ bool TimerFd::init() {
     // 启动定时器
     timerfd_settime(timer_fd_, 0, &time_intv, NULL);
     // 绑定回调函数
-    MY_EPOLL->EpollAdd(timer_fd_, std::bind(&TimerFd::timeOutCallBack, this));
+    MY_EPOLL.EpollAdd(timer_fd_, std::bind(&TimerFd::timeOutCallBack, this));
 
     return true;
 }

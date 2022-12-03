@@ -72,9 +72,8 @@ static void _signal_handler(int signum)
 static void sigint_handler(int sig)
 {
 	std::cout << "--- quit the loop! ---" << std::endl;
-	if(MY_EPOLL != nullptr) {
-        MY_EPOLL->EpoolQuit();
-    }
+    MY_EPOLL.EpoolQuit();
+    exit(0);
 }
 
 int main(int argc, char* argv[])
@@ -90,18 +89,15 @@ int main(int argc, char* argv[])
 
     spdlog::info("Welcome to spdlog version {}.{}.{}  !", SPDLOG_VER_MAJOR, SPDLOG_VER_MINOR, SPDLOG_VER_PATCH);
 
-    // TimerFd timerfd();
-    // Uart serial("/dev/ttyUSB0");
-
     LcdRgb lcd;
+    lcd.Init();
+    lcd.FillScreenSolid(RGB_BLUE);
 
-    // //初始化文件监控事件并加入事件列表
-    // Inotify inotify("/tmp/text");
+    while(1) {
+        sleep(1);
+    }
 
-    // GpioKey key;
-    // UdpServer udp_server;
-
-    MY_EPOLL->EpollLoop();//等待事件触发
+    MY_EPOLL.EpollLoop();//等待事件触发
 
     return 0;
 

@@ -27,11 +27,11 @@ Socket::Socket() {
 
     printf("fd %d listening at %d\n", listenfd_, port_);
 
-    MY_EPOLL->EpollAdd(listenfd_, std::bind(&Socket::handleRead, this));
+    MY_EPOLL.EpollAdd(listenfd_, std::bind(&Socket::handleRead, this));
 }
 
 Socket::~Socket() {
-    MY_EPOLL->EpollDel(listenfd_);
+    MY_EPOLL.EpollDel(listenfd_);
     if(listenfd_ > 0) {
         close(listenfd_);
     }
@@ -49,7 +49,7 @@ void Socket::handleAccept() {
     assert(r >= 0);
     printf("accept a connection from %s\n", inet_ntoa(raddr.sin_addr));
 
-    MY_EPOLL->EpollAdd(cfd, std::bind(&Socket::handleRead, this));
+    MY_EPOLL.EpollAdd(cfd, std::bind(&Socket::handleRead, this));
 }
 
 void Socket::handleRead() {

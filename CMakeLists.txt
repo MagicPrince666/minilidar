@@ -3,18 +3,14 @@ SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 option(EXAMPLE "shall we complie example" on)
 # INCLUDE(build_for_host)
 
-include_directories(${CMAKE_SOURCE_DIR}/include)
+include_directories(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/utils)
 
 PROJECT(CppDemo)
 
-# SET(CMAKE_BUILD_TYPE "Debug")
-SET(CMAKE_BUILD_TYPE "Release")
+set(CMAKE_CXX_STANDARD 17)
 
-SET(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS} -O0 -Wall -g")
-SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS} -Os -Wall")
-
-SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -std=c++14 -O0 -Wall -g")
-SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -std=c++14 -Os -Wall -D_TIME_BITS=32")
+SET(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g -ggdb ")
+SET(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall")
 
 MESSAGE(STATUS ${CMAKE_SYSTEM_NAME})
 
@@ -40,12 +36,12 @@ add_subdirectory(lib_json)
 set(EXEC_NAME minilidar)
 
 add_executable(${EXEC_NAME} main.cc
-    uart.cc
-    inotify.cc
-    timerfd.cc
-    utils.cc
-    socket.cc
-    udp_server.cc
+    utils/uart.cc
+    utils/inotify.cc
+    utils/timerfd.cc
+    utils/utils.cc
+    utils/socket.cc
+    utils/udp_server.cc
 )
 
 target_link_libraries(${EXEC_NAME} 

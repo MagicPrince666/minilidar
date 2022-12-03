@@ -56,7 +56,7 @@ Inotify::Inotify(const std::string name)
         fprintf(stderr, "inotify_add_watch %s failed\n", name.c_str());
         exit(1);
     } else {
-        MY_EPOLL->EpollAdd(fd, std::bind(&Inotify::handle_event, this));
+        MY_EPOLL.EpollAdd(fd, std::bind(&Inotify::handle_event, this));
     }
 
 }
@@ -64,7 +64,7 @@ Inotify::Inotify(const std::string name)
 Inotify::~Inotify()
 {
     if(fd > 0) {
-        MY_EPOLL->EpollDel(fd);
+        MY_EPOLL.EpollDel(fd);
         close(fd);
     }
     std::cout << "inotify deinit" << std::endl;

@@ -44,7 +44,7 @@ Ultrasonic::Ultrasonic()
 Ultrasonic::~Ultrasonic(void)
 {
     if (key_input_fd_ > 0) {
-        MY_EPOLL->EpollDel(key_input_fd_);
+        MY_EPOLL.EpollDel(key_input_fd_);
         close(key_input_fd_);
     }
 }
@@ -90,7 +90,7 @@ bool Ultrasonic::init() {
   // 绑定回调函数
   if (key_input_fd_ > 0) {
         std::cout << "Bind epoll" << std::endl;
-        MY_EPOLL->EpollAdd(key_input_fd_, std::bind(&Ultrasonic::IRKey, this));
+        MY_EPOLL.EpollAdd(key_input_fd_, std::bind(&Ultrasonic::IRKey, this));
   }
   return true;
 }
