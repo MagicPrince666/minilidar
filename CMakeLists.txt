@@ -55,3 +55,5 @@ target_link_libraries(${EXEC_NAME}
     ultrasonic
 )
 
+install(TARGETS ${EXEC_NAME}
+        RUNTIME DESTINATION /usr/sbin)
