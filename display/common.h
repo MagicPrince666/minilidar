@@ -80,8 +80,8 @@ public:
      * @param clearlen
      * @return int
      */
-    int FbPutString(int x, int y, const char *s, uint32_t maxlen,
-                    uint32_t color, bool clear, int clearlen);
+    int32_t FbPutString(int32_t x, int32_t y, const char *s, uint32_t maxlen,
+                    uint32_t color, bool clear, int32_t clearlen);
     /**
      * @brief 将值打印到屏幕
      * @param x
@@ -93,8 +93,8 @@ public:
      * @param clearlen
      * @return int
      */
-    int FbPutValue(int x, int y, int value, uint32_t maxlen,
-                   uint32_t color, bool clear, int clearlen);
+    int32_t FbPutValue(int32_t x, int32_t y, int32_t value, uint32_t maxlen,
+                   uint32_t color, bool clear, int32_t clearlen);
 
     /**
      * @brief 画点
@@ -102,7 +102,7 @@ public:
      * @param y
      * @param color
      */
-    void FbDrawPixel(int x, int y, uint32_t color);
+    void FbDrawPixel(int32_t x, int32_t y, uint32_t color);
 
     /**
      * @brief 画线
@@ -111,7 +111,7 @@ public:
      * @param x2
      * @param y2
      */
-    void FbDrawLine(int x1, int y1, int x2, int y2, uint32_t color);
+    void FbDrawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t color);
 
     /**
      * @brief 画圆
@@ -120,7 +120,7 @@ public:
      * @param r
      * @param color
      */
-    void FbDrawCircle(int x, int y, int r, uint32_t color);
+    void FbDrawCircle(int32_t x, int32_t y, int32_t r, uint32_t color);
 
     /**
      * @brief 清空区域
@@ -129,13 +129,13 @@ public:
      * @param w
      * @param h
      */
-    void FbClearArea(int x, int y, int w, int h);
+    void FbClearArea(int32_t x, int32_t y, int32_t w, int32_t h);
 
     /**
      * @brief 画矩形
      * (x1,y1),(x2,y2):矩形的对角坐标
      */
-    void FbDrawRectangle(int x1, int y1, int x2, int y2, uint32_t color);
+    void FbDrawRectangle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t color);
 
 private:
     struct fb_info {
@@ -149,7 +149,7 @@ private:
         int32_t i_line_width;
         int32_t i_pixel_width;
     };
-    void FbPutChar(int x, int y, char c,
+    void FbPutChar(int32_t x, int32_t y, char c,
                    uint32_t color);
 
     struct fb_info *fb_info_;

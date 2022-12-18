@@ -57,7 +57,7 @@ LcdRgb::~LcdRgb()
     FillScreenSolid(0x0);
 
     if (fb_info_->ptr) {
-        int stat = munmap(fb_info_->ptr, fb_info_->fix.smem_len);
+        int32_t stat = munmap(fb_info_->ptr, fb_info_->fix.smem_len);
         if (stat < 0) {
             perror("Error munmap'ing framebuffer device");
         }
@@ -108,10 +108,10 @@ bool LcdRgb::Init()
     return true;
 }
 
-void LcdRgb::FbClearArea(int x, int y, int w, int h)
+void LcdRgb::FbClearArea(int32_t x, int32_t y, int32_t w, int32_t h)
 {
-    int i = 0;
-    int loc;
+    int32_t i = 0;
+    int32_t loc;
     char *fbuffer                 = (char *)fb_info_->ptr;
     struct fb_var_screeninfo *var = &fb_info_->var;
     struct fb_fix_screeninfo *fix = &fb_info_->fix;
@@ -122,10 +122,10 @@ void LcdRgb::FbClearArea(int x, int y, int w, int h)
     }
 }
 
-void LcdRgb::FbPutChar(int x, int y, char c,
+void LcdRgb::FbPutChar(int32_t x, int32_t y, char c,
                        uint32_t color)
 {
-    int j, bits;
+    int32_t j, bits;
     uint32_t loc;
     uint8_t *p8;
     uint16_t *p16;
@@ -158,10 +158,10 @@ void LcdRgb::FbPutChar(int x, int y, char c,
     }
 }
 
-int LcdRgb::FbPutString(int x, int y, const char *s, uint32_t maxlen,
-                        uint32_t color, bool clear, int clearlen)
+int32_t LcdRgb::FbPutString(int32_t x, int32_t y, const char *s, uint32_t maxlen,
+                        uint32_t color, bool clear, int32_t clearlen)
 {
-    int w = 0;
+    int32_t w = 0;
 
     if (clear) {
         FbClearArea(x, y, clearlen * 8, 8);
@@ -175,13 +175,13 @@ int LcdRgb::FbPutString(int x, int y, const char *s, uint32_t maxlen,
     return w;
 }
 
-int LcdRgb::FbPutValue(int x, int y, int value, uint32_t maxlen,
-                       uint32_t color, bool clear, int clearlen)
+int32_t LcdRgb::FbPutValue(int32_t x, int32_t y, int32_t value, uint32_t maxlen,
+                       uint32_t color, bool clear, int32_t clearlen)
 {
-    int w        = 0;
+    int32_t w        = 0;
     char str[40] = {0};
 
-    int len  = sprintf(str, "%d", value);
+    int32_t len  = sprintf(str, "%d", value);
     str[len] = 0;
 
     if (clear) {
@@ -196,12 +196,12 @@ int LcdRgb::FbPutValue(int x, int y, int value, uint32_t maxlen,
     return w;
 }
 
-void LcdRgb::FbDrawPixel(int x, int y, uint32_t color)
+void LcdRgb::FbDrawPixel(int32_t x, int32_t y, uint32_t color)
 {
     uint8_t *pucPen8 = fb_info_->ptr + y * fb_info_->i_line_width + x * fb_info_->i_pixel_width;
     uint16_t *pwPen16;
     uint32_t *pdwPen32;
-    int iRed, iGreen, iBlue;
+    int32_t iRed, iGreen, iBlue;
 
     pwPen16  = (uint16_t *)pucPen8;
     pdwPen32 = (uint32_t *)pucPen8;
@@ -230,11 +230,11 @@ void LcdRgb::FbDrawPixel(int x, int y, uint32_t color)
     }
 }
 
-void LcdRgb::FbDrawLine(int x1, int y1, int x2, int y2, uint32_t color)
+void LcdRgb::FbDrawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t color)
 {
-    int t;
-    int xerr = 0, yerr = 0, delta_x, delta_y, distance;
-    int incx, incy, uRow, uCol;
+    int32_t t;
+    int32_t xerr = 0, yerr = 0, delta_x, delta_y, distance;
+    int32_t incx, incy, uRow, uCol;
     delta_x = x2 - x1; //计算坐标增量
     delta_y = y2 - y1;
     uRow    = x1;
@@ -276,9 +276,9 @@ void LcdRgb::FbDrawLine(int x1, int y1, int x2, int y2, uint32_t color)
     }
 }
 
-void LcdRgb::FbDrawCircle(int x, int y, int r, uint32_t color)
+void LcdRgb::FbDrawCircle(int32_t x, int32_t y, int32_t r, uint32_t color)
 {
-    int a, b, num;
+    int32_t a, b, num;
     a = 0;
     b = r;
     while (2 * b * b >= r * r) { // 1/8圆即可
@@ -313,7 +313,7 @@ void LcdRgb::FillScreenSolid(uint32_t color)
     }
 }
 
-void LcdRgb::FbDrawRectangle(int x1, int y1, int x2, int y2, uint32_t color)
+void LcdRgb::FbDrawRectangle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t color)
 {
     FbDrawLine(x1, y1, x2, y1, color);
     FbDrawLine(x1, y1, x1, y2, color);
