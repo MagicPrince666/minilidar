@@ -141,11 +141,13 @@ private:
     struct fb_info {
         int fd;
 
-        void *ptr;
+        uint8_t *ptr;
 
         struct fb_var_screeninfo var;
         struct fb_fix_screeninfo fix;
         uint32_t bytespp;
+        int32_t i_line_width;
+        int32_t i_pixel_width;
     };
     void FbPutChar(int x, int y, char c,
                    uint32_t color);

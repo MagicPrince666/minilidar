@@ -97,9 +97,12 @@ bool LcdRgb::Init()
     /*计算屏幕缓冲区大小*/
     int32_t screensize = fb_info_->var.xres * fb_info_->var.yres * fb_info_->var.bits_per_pixel / 8;
 
-    fb_info_->ptr = mmap(nullptr, screensize, PROT_WRITE | PROT_READ,
+    fb_info_->i_line_width   = fb_info_->var.xres * fb_info_->var.bits_per_pixel / 8;
+    fb_info_->i_pixel_width  = fb_info_->var.bits_per_pixel / 8;
+
+    fb_info_->ptr = (uint8_t *)mmap(nullptr, screensize, PROT_WRITE | PROT_READ,
                                      MAP_SHARED, fb_info_->fd, 0);
-    spdlog::info("ptr {} size {}", fb_info_->ptr, screensize);
+    // spdlog::info("ptr {} size {}", fb_info_->ptr, screensize);
 
     ASSERT(fb_info_->ptr != MAP_FAILED);
     return true;
@@ -195,46 +198,35 @@ int LcdRgb::FbPutValue(int x, int y, int value, uint32_t maxlen,
 
 void LcdRgb::FbDrawPixel(int x, int y, uint32_t color)
 {
-    uint32_t *fbmem;
+    uint8_t *pucPen8 = fb_info_->ptr + y * fb_info_->i_line_width + x * fb_info_->i_pixel_width;
+    uint16_t *pwPen16;
+    uint32_t *pdwPen32;
+    int iRed, iGreen, iBlue;
 
-    fbmem = (uint32_t *)fb_info_->ptr;
+    pwPen16  = (uint16_t *)pucPen8;
+    pdwPen32 = (uint32_t *)pucPen8;
+
     switch (fb_info_->var.bits_per_pixel) {
     case 8: {
-        uint8_t *p;
-        fbmem += fb_info_->fix.line_length * y;
-        p = (uint8_t *)fbmem;
-        p += x;
-        *p = color;
-    } break;
+        *pucPen8 = color; /*对于8BPP：color 为调色板的索引值，其颜色取决于调色板的数值*/
+        break;
+    }
     case 16: {
-        unsigned short c;
-        unsigned r = (color >> 16) & 0xff;
-        unsigned g = (color >> 8) & 0xff;
-        unsigned b = (color >> 0) & 0xff;
-        uint16_t *p;
-        r = r * 32 / 256;
-        g = g * 64 / 256;
-        b = b * 32 / 256;
-        c = (r << 11) | (g << 5) | (b << 0);
-        fbmem += fb_info_->fix.line_length * y;
-        p = (uint16_t *)fbmem;
-        p += x;
-        *p = c;
-    } break;
-    case 24: {
-        unsigned char *p;
-        p    = (unsigned char *)fbmem + fb_info_->fix.line_length * y + 3 * x;
-        *p++ = color;
-        *p++ = color >> 8;
-        *p   = color >> 16;
-    } break;
+        iRed     = (color >> 16) & 0xff;
+        iGreen   = (color >> 8) & 0xff;
+        iBlue    = (color >> 0) & 0xff;
+        color  = ((iRed >> 3) << 11) | ((iGreen >> 2) << 5) | (iBlue >> 3); /*格式：RGB565*/
+        *pwPen16 = color;
+        break;
+    }
+    case 32: {
+        *pdwPen32 = color;
+        break;
+    }
     default: {
-        uint32_t *p;
-        fbmem += fb_info_->fix.line_length * y;
-        p = (uint32_t *)fbmem;
-        p += x;
-        *p = color;
-    } break;
+        // DBG_PRINTF("can't surport %dbpp", t_fb_var_.bits_per_pixel);
+        break;
+    }
     }
 }
 
@@ -311,13 +303,13 @@ void LcdRgb::FbDrawCircle(int x, int y, int r, uint32_t color)
 
 void LcdRgb::FillScreenSolid(uint32_t color)
 {
-    uint32_t x, y;
     uint32_t h = fb_info_->var.yres;
     uint32_t w = fb_info_->var.xres;
 
-    for (y = 0; y < h; y++) {
-        for (x = 0; x < w; x++)
+    for (uint32_t y = 0; y < h; y++) {
+        for (uint32_t x = 0; x < w; x++) {
             FbDrawPixel(x, y, color);
+        }
     }
 }
 

@@ -93,10 +93,6 @@ int main(int argc, char* argv[])
     lcd.Init();
     lcd.FillScreenSolid(RGB_BLUE);
 
-    while(1) {
-        sleep(1);
-    }
-
     MY_EPOLL.EpollLoop();//等待事件触发
 
     return 0;
