@@ -91,7 +91,9 @@ int main(int argc, char* argv[])
 
     LcdRgb lcd;
     lcd.Init();
-    lcd.FillScreenSolid(RGB_BLUE);
+    lcd.FillScreenSolid(RGB_WHITE);
+    std::string text = "Hello leo";
+    lcd.FbPutString(10, 10, text.c_str(), text.size(), RGB_RED, false, text.size());
 
     MY_EPOLL.EpollLoop();//等待事件触发
 

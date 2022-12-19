@@ -141,15 +141,15 @@ void LcdRgb::FbPutChar(int32_t x, int32_t y, char c,
                 ((bits >> (7 - j)) & 1)) {
                 switch (var->bits_per_pixel) {
                 case 8:
-                    p8  = (uint8_t *)(fb_info_->ptr) + loc;
+                    p8  = (uint8_t *)(fb_info_->ptr + loc);
                     *p8 = color;
                 case 16:
-                    p16  = (uint16_t *)(fb_info_->ptr) + loc;
+                    p16  = (uint16_t *)(fb_info_->ptr + loc);
                     *p16 = color;
                     break;
                 case 24:
                 case 32:
-                    p32  = (uint32_t *)(fb_info_->ptr) + loc;
+                    p32  = (uint32_t *)(fb_info_->ptr + loc);
                     *p32 = color;
                     break;
                 }
