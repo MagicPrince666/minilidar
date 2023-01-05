@@ -50,7 +50,7 @@ LcdRgb::LcdRgb(std::string dev) :
 fb_name_(dev)
 {
     // fb_info_ = new (std::nothrow) fb_info;
-    fb_info_ = std::make_shared<struct fb_info>();
+    fb_info_ = std::make_unique<struct fb_info>();
 }
 
 LcdRgb::~LcdRgb()
