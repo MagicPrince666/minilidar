@@ -24,6 +24,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <iostream>
+#include <memory>
 
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
@@ -152,7 +153,7 @@ private:
     void FbPutChar(int32_t x, int32_t y, char c,
                    uint32_t color);
 
-    struct fb_info *fb_info_;
+    std::shared_ptr<struct fb_info> fb_info_;
     std::string fb_name_;
     int bl_fd_{-1};
 };
