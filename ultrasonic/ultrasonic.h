@@ -3,19 +3,15 @@
 #include "xepoll.h"
 #include "interface.h"
 
-class Ultrasonic : public Interface
+class Ultrasonic
 {
 public:
-    Ultrasonic();
+    Ultrasonic(std::string dev = "srf04");
     ~Ultrasonic();
 
-    bool init();
-    int IRKey();
-
-    void Transfer(int num);
+    int Srf04Distance();
 
 private:
-    int key_input_fd_{-1};
-    struct timeval last_time_;
-    int is_action_{0};
+    std::string device_dir_;
+    std::string ScanIioDevice(std::string name);
 };

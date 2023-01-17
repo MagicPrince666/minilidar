@@ -15,86 +15,53 @@
 #include "ultrasonic.h"
 #include "utils.h"
 
-Ultrasonic::Ultrasonic()
+Ultrasonic::Ultrasonic(std::string dev)
 {
-    char          buf[256] = { 0, };  /* RATS: Use ok */
-    int           fd = -1;
-    std::string dev = "";
-    std::vector<std::string> events;
-    Utils::getFiles("/dev/input/", events);
-    for (auto iter : events) {
-        std::cout << "Device name "<< iter << std::endl;
-        if ((fd = open(iter.c_str(), O_RDONLY, 0)) >= 0) {
-            ioctl(fd, EVIOCGNAME(sizeof(buf)), buf);
-            dev = buf;
-            std::cout << "Device info "<< dev << std::endl;
-            if(dev == "gpio-keys") {
-                key_input_fd_ = fd;
-                break;
-            }
-            close(fd);
-        }
-    }
-
-    assert(fd >= 0);
-
-    init();
+    device_dir_ = ScanIioDevice(dev);
+    assert(device_dir_ != "");
+    std::cout << BOLDGREEN << "Iio bus path " << device_dir_ << std::endl;
 }
 
 Ultrasonic::~Ultrasonic(void)
 {
-    if (key_input_fd_ > 0) {
-        MY_EPOLL.EpollDel(key_input_fd_);
-        close(key_input_fd_);
-    }
+    std::cout << BOLDGREEN << "Close srf04 device!" << std::endl;
 }
 
-int Ultrasonic::IRKey(void)
+int Ultrasonic::Srf04Distance()
 {
-    struct input_event key;
-    int ret = read(key_input_fd_, &key, sizeof(key));
-    if(ret > 0) {
-        if(key.code == 103) {
-            // std::cout << "Value = " << key.value <<std::endl;
-            // std::cout << "Time = " << key.time.tv_sec << "." << (key.time.tv_usec)/1000 << " s" <<std::endl;
+    std::string distance_str = device_dir_ + "in_distance_raw";
+    std::string buf = Utils::ReadFileIntoString(distance_str);
+    int distance = atoi(buf.c_str());
 
-            if(key.value == 1) { // 记录开始时间
-#if defined(__GLIBC__) && !defined(__UCLIBC__) && !defined(__MUSL__)
-                last_time_ = key.time;
-#else
-                last_time_.tv_sec = key.input_event_sec;
-                last_time_.tv_usec = key.input_event_usec;
-#endif
+    return distance;
+}
+
+std::string Ultrasonic::ScanIioDevice(std::string name) {
+    std::string device = "";
+    if(!name.empty()) { //扫描设备
+        for(int i = 0; i < 10; i++) {
+            std::string filename = "/sys/bus/iio/devices/iio:device" + std::to_string(i) + "/name";
+            // std::cout << "iio bus name" << filename << std::endl;
+            struct stat buffer;   
+            if(stat(filename.c_str(), &buffer) == 0) {
+                std::ifstream iio_name;
+                iio_name.open(filename, std::ios::in);
+                char buff[64] = {0};
+                iio_name.read(buff, sizeof(buff));
+                std::string dev_name(buff);
+
+                if (dev_name.find(name) != std::string::npos) {
+                    // std::cout << "find " << name << " device\n";
+                    device = "/sys/bus/iio/devices/iio:device" + std::to_string(i) +"/";
+                    break;
+                }
             } else {
-                // 换算距离
-                double time = 0.0;
-                double starttime = last_time_.tv_sec * 1000000 + last_time_.tv_usec;
-#if defined(__GLIBC__) && !defined(__UCLIBC__) && !defined(__MUSL__)
-                double endtime = key.time.tv_sec * 1000000 + key.time.tv_usec;
-#else
-                double endtime = key.input_event_sec * 1000000 + key.input_event_usec;
-#endif
-
-                time = (endtime - starttime) * 0.0001;
-
-                double distance = 170.0 * time * 0.0001;
-                std::cout << "Time = " << time << " ms" <<std::endl;
-                std::cout << "Distance = " << std::setprecision(3) << distance << " m" <<std::endl;
+                // 搜索完了，没有找到对应设备
+                std::cout << "iio bus scan end\n";
+                break;
             }
         }
     }
-    return ret;
-}
 
-bool Ultrasonic::init() {
-  // 绑定回调函数
-  if (key_input_fd_ > 0) {
-        std::cout << "Bind epoll" << std::endl;
-        MY_EPOLL.EpollAdd(key_input_fd_, std::bind(&Ultrasonic::IRKey, this));
-  }
-  return true;
-}
-
-void Ultrasonic::Transfer(int num) {
-    is_action_ = num;
+    return device;
 }
