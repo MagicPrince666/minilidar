@@ -3,9 +3,9 @@ SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 option(EXAMPLE "shall we complie example" on)
 # INCLUDE(build_for_host)
 
-PROJECT(CppDemo)
+PROJECT(CppDemo LANGUAGES CXX C)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 11)
 
 SET(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g -ggdb ")
 SET(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall")
@@ -35,6 +35,7 @@ include_directories(
 "${CMAKE_SOURCE_DIR}/display"
 "${CMAKE_SOURCE_DIR}/input"
 "${CMAKE_SOURCE_DIR}/imu/mpu6050"
+"${CMAKE_SOURCE_DIR}/imu/mpu9250"
 )
 
 add_subdirectory(lib_json)
@@ -52,6 +53,7 @@ file(GLOB main_srcs
 "${CMAKE_CURRENT_SOURCE_DIR}/display/*.cc"
 "${CMAKE_CURRENT_SOURCE_DIR}/input/*.cc"
 "${CMAKE_CURRENT_SOURCE_DIR}/imu/mpu6050/*.cpp"
+"${CMAKE_CURRENT_SOURCE_DIR}/imu/mpu9250/*.cpp"
 )
 
 add_executable(${EXEC_NAME}

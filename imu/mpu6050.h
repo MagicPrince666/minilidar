@@ -55,6 +55,7 @@ private:
 
     void Euler2Quaternion(float roll, float pitch, float yaw, quaternion_t &quat);
 
+protected:
     int GpioInterruptInit();
 
     void GpioInterruptDeinit();

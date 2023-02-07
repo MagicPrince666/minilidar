@@ -48,11 +48,12 @@
 #include <unistd.h>
 
 #include "driver_mpu6050_interface.h"
+#include <memory>
 #include "iic.h"
 
 #define IIC_DEVICE_NAME "/dev/i2c-0"
 
-IicBus *g_iic_bus = nullptr;
+std::shared_ptr<IicBus> g_iic_bus;
 
 /**
  * @brief  interface iic bus init
@@ -63,7 +64,7 @@ IicBus *g_iic_bus = nullptr;
  */
 uint8_t mpu6050_interface_iic_init(void)
 {
-    g_iic_bus = new IicBus(IIC_DEVICE_NAME);
+    g_iic_bus = std::make_shared<IicBus>(IIC_DEVICE_NAME);
     return g_iic_bus->IicInit();
 }
 
@@ -76,7 +77,6 @@ uint8_t mpu6050_interface_iic_init(void)
  */
 uint8_t mpu6050_interface_iic_deinit(void)
 {
-    delete g_iic_bus;
     return 0;
 }
 

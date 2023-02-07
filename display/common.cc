@@ -49,8 +49,7 @@
 LcdRgb::LcdRgb(std::string dev) :
 fb_name_(dev)
 {
-    // fb_info_ = new (std::nothrow) fb_info;
-    fb_info_ = std::make_unique<struct fb_info>();
+    fb_info_ = std::make_shared<struct fb_info>();
 }
 
 LcdRgb::~LcdRgb()
@@ -71,8 +70,6 @@ LcdRgb::~LcdRgb()
         write(bl_fd_, "1", 1);
         close(bl_fd_);
     }
-
-    // delete fb_info_;
 }
 
 bool LcdRgb::Init()
