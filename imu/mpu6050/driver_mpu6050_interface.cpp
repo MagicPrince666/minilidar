@@ -51,8 +51,6 @@
 #include <memory>
 #include "iic.h"
 
-#define IIC_DEVICE_NAME "/dev/i2c-0"
-
 std::shared_ptr<IicBus> g_iic_bus;
 
 /**

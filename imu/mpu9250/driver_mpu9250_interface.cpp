@@ -53,9 +53,6 @@
 #include "spi.h"
 #include <memory>
 
-#define IIC_DEVICE_NAME "/dev/i2c-0"
-#define SPI_DEVICE_NAME "/dev/spidev0.0"    /**< spi device name */
-
 std::shared_ptr<IicBus> g_i2c_bus;
 
 std::shared_ptr<SpiBus> g_spi_bus;

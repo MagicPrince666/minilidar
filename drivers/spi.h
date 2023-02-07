@@ -17,6 +17,8 @@
 
 #include <iostream>
 
+#define SPI_DEVICE_NAME "/dev/spidev0.0"
+
 /**
  * @brief spi mode type enumeration definition
  */

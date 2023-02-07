@@ -16,6 +16,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#define IIC_DEVICE_NAME "/dev/i2c-0"
+
 class IicBus
 {
 public:
