@@ -19,10 +19,15 @@ Epoll::Epoll(void)
 #endif
     assert(epfd_ >= 0);
     epoll_loop_ = true;
+
+    loop_thread_ = std::thread([](Epoll *p_this) { p_this->EpollLoop(); }, this);
 }
 
 Epoll::~Epoll(void)
 {
+    if (loop_thread_.joinable()) {
+        loop_thread_.join();
+    }
     if (epfd_ > 0) {
         ::close(epfd_);
     }
@@ -43,7 +48,7 @@ int Epoll::EpollAdd(int fd, std::function<void()> handler)
     EV_SET(&ev_[num++], fd, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, &fd);
     // EV_SET(&ev_[num++], fd, EVFILT_WRITE, EV_ADD|EV_ENABLE, 0, 0, &fd);
     return num;
-    // return kevent(epfd_, ev_, n, NULL, 0, NULL);
+    // return kevent(epfd_, ev_, n, nullptr, 0, nullptr);
 
 #else
     ev_.data.fd = fd;
@@ -60,7 +65,7 @@ int Epoll::EpollDel(int fd)
     // EV_SET(&ev_[num++], fd, EVFILT_WRITE, EV_DELETE, 0, 0, &fd);
 #else
     ev_.data.fd = fd;
-    ::epoll_ctl(epfd_, EPOLL_CTL_DEL, fd, NULL);
+    ::epoll_ctl(epfd_, EPOLL_CTL_DEL, fd, nullptr);
 #endif
     // erase: 0 不存在元素 1 存在元素
     return listeners_.erase(fd) - 1;

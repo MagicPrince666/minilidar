@@ -19,6 +19,8 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <mutex>
+#include <thread>
 
 #define UDP_BUF_SIZE 1472
 #define TCPBUF_SIZE 1460
@@ -52,6 +54,6 @@ private:
 #endif
     int epfd_;
     bool epoll_loop_{true};
-    static Epoll *instance_;
+    std::thread loop_thread_;
     std::unordered_map<int, std::function<void()>> listeners_;
 };
