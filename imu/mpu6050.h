@@ -33,9 +33,9 @@ typedef struct
 class Mpu6050 {
 public:
     Mpu6050(std::string dev = "mpu6050");
-    ~Mpu6050();
+   virtual ~Mpu6050();
 
-    bool Init();
+    virtual bool Init();
     int Mpu6050Test();
     bool GetEulerQuat(euler_t &eu);
 

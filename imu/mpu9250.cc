@@ -1,18 +1,4 @@
 #include "mpu9250.h"
-#include "driver_mpu9250_dmp.h"
-
-uint32_t cnt;
-uint16_t len;
-uint8_t (*g_gpio_irq)(void) = NULL;
-static int16_t gs_accel_raw[128][3];
-static float gs_accel_g[128][3];
-static int16_t gs_gyro_raw[128][3];
-static float gs_gyro_dps[128][3];
-static int32_t gs_quat[128][4];
-static float gs_pitch[128];
-static float gs_roll[128];
-static float gs_yaw[128];
-mpu9250_address_t addr;
 
 static void a_receive_callback(uint8_t type)
 {
@@ -124,37 +110,51 @@ static void a_dmp_orient_callback(uint8_t orientation)
 
 Mpu9250::Mpu9250() {}
 
-Mpu9250::~Mpu9250() {}
+Mpu9250::~Mpu9250() {
+    mpu9250_dmp_deinit();
+    g_gpio_irq_ = nullptr;
+    GpioInterruptDeinit();
+}
+
+int Mpu9250::GpioInterruptInit()
+{
+    // mpu_int_ = new GpioKey;
+    // if (mpu_int_) {
+    //     return 0;
+    // }
+    return 0;
+}
+
+void Mpu9250::GpioInterruptDeinit()
+{
+    // delete mpu_int_;
+}
 
 bool Mpu9250::Init()
 {
-    return true;
-}
-
-int Mpu9250::test()
-{
     /* init */
     if (GpioInterruptInit() != 0) {
-        return 1;
+        return false;
     }
-    g_gpio_irq = mpu9250_dmp_irq_handler;
+    g_gpio_irq_ = mpu9250_dmp_irq_handler;
 
     /* init */
     addr = MPU9250_ADDRESS_AD0_LOW;
     if (mpu9250_dmp_init(MPU9250_INTERFACE_IIC, addr, a_receive_callback,
                          a_dmp_tap_callback, a_dmp_orient_callback) != 0) {
-        g_gpio_irq = NULL;
+        g_gpio_irq_ = nullptr;
         GpioInterruptDeinit();
 
-        return 1;
+        return false;
     }
+    return true;
+}
 
-    /* delay 500 ms */
-    mpu9250_interface_delay_ms(500);
-
+int Mpu9250::Mpu9250Test()
+{
+    uint32_t cnt;
+    uint16_t len = 128;
     while(true) {
-        len = 128;
-
         /* read */
         if (mpu9250_dmp_read_all(gs_accel_raw, gs_accel_g,
                                  gs_gyro_raw, gs_gyro_dps,
@@ -162,7 +162,7 @@ int Mpu9250::test()
                                  gs_pitch, gs_roll, gs_yaw,
                                  &len) != 0) {
             mpu9250_dmp_deinit();
-            g_gpio_irq = NULL;
+            g_gpio_irq_ = nullptr;
             GpioInterruptDeinit();
 
             return 1;
@@ -187,17 +187,12 @@ int Mpu9250::test()
         int res = mpu9250_dmp_get_pedometer_counter(&cnt);
         if (res != 0) {
             mpu9250_dmp_deinit();
-            g_gpio_irq = NULL;
+            g_gpio_irq_ = nullptr;
             GpioInterruptDeinit();
 
             return 1;
         }
     }
-
-    /* deinit */
-    mpu9250_dmp_deinit();
-    g_gpio_irq = NULL;
-    GpioInterruptDeinit();
 
     return 0;
 }
