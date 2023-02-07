@@ -50,11 +50,15 @@
 
 #include "driver_mpu9250_interface.h"
 #include "iic.h"
+#include "spi.h"
 #include <memory>
 
 #define IIC_DEVICE_NAME "/dev/i2c-0"
+#define SPI_DEVICE_NAME "/dev/spidev0.0"    /**< spi device name */
 
 std::shared_ptr<IicBus> g_i2c_bus;
+
+static int gs_spi_fd; 
 
 /**
  * @brief  interface iic bus init
@@ -122,7 +126,7 @@ uint8_t mpu9250_interface_iic_write(uint8_t addr, uint8_t reg, uint8_t *buf, uin
  */
 uint8_t mpu9250_interface_spi_init(void)
 {
-    return 0;
+    return spi_init(SPI_DEVICE_NAME, &gs_spi_fd, SPI_MODE_TYPE_3, 1000 * 500);
 }
 
 /**
@@ -134,7 +138,7 @@ uint8_t mpu9250_interface_spi_init(void)
  */
 uint8_t mpu9250_interface_spi_deinit(void)
 {
-    return 0;
+    return spi_deinit(gs_spi_fd);
 }
 
 /**
@@ -149,7 +153,7 @@ uint8_t mpu9250_interface_spi_deinit(void)
  */
 uint8_t mpu9250_interface_spi_read(uint8_t reg, uint8_t *buf, uint16_t len)
 {
-    return 0;
+    return spi_read(gs_spi_fd, reg, buf, len);
 }
 
 /**
@@ -164,7 +168,7 @@ uint8_t mpu9250_interface_spi_read(uint8_t reg, uint8_t *buf, uint16_t len)
  */
 uint8_t mpu9250_interface_spi_write(uint8_t reg, uint8_t *buf, uint16_t len)
 {
-    return 0;
+    return spi_write(gs_spi_fd, reg, buf, len);
 }
 
 /**
