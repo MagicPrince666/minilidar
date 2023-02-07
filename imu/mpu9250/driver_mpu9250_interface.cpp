@@ -58,8 +58,7 @@
 
 std::shared_ptr<IicBus> g_i2c_bus;
 
-static int gs_spi_fd; 
-
+std::shared_ptr<SpiBus> g_spi_bus;
 /**
  * @brief  interface iic bus init
  * @return status code
@@ -126,7 +125,8 @@ uint8_t mpu9250_interface_iic_write(uint8_t addr, uint8_t reg, uint8_t *buf, uin
  */
 uint8_t mpu9250_interface_spi_init(void)
 {
-    return spi_init(SPI_DEVICE_NAME, &gs_spi_fd, SPI_MODE_TYPE_3, 1000 * 500);
+    g_spi_bus = std::make_shared<SpiBus>(SPI_DEVICE_NAME, SPI_MODE_TYPE_3, 1000 * 500);
+    return 0;
 }
 
 /**
@@ -138,7 +138,7 @@ uint8_t mpu9250_interface_spi_init(void)
  */
 uint8_t mpu9250_interface_spi_deinit(void)
 {
-    return spi_deinit(gs_spi_fd);
+    return 0;
 }
 
 /**
@@ -153,7 +153,7 @@ uint8_t mpu9250_interface_spi_deinit(void)
  */
 uint8_t mpu9250_interface_spi_read(uint8_t reg, uint8_t *buf, uint16_t len)
 {
-    return spi_read(gs_spi_fd, reg, buf, len);
+    return g_spi_bus->spiRead(reg, buf, len);
 }
 
 /**
@@ -168,7 +168,7 @@ uint8_t mpu9250_interface_spi_read(uint8_t reg, uint8_t *buf, uint16_t len)
  */
 uint8_t mpu9250_interface_spi_write(uint8_t reg, uint8_t *buf, uint16_t len)
 {
-    return spi_write(gs_spi_fd, reg, buf, len);
+    return g_spi_bus->spiWrite(reg, buf, len);
 }
 
 /**
