@@ -5,8 +5,9 @@ SET(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/install)
 
 SET(CMAKE_SYSTEM_PROCESSOR arm)
 # 工具链地址
-SET(TOOLCHAIN_DIR  "/Volumes/unix/openwrt/staging_dir/toolchain-arm_cortex-a7+neon-vfpv4_gcc-11.3.0_musl_eabi/bin/")
-# export STAGING_DIR=/Volumes/unix/openwrt/staging_dir
-# imx8mmini
+SET(TOOLCHAIN_DIR  "/Volumes/unix/HandsomeMod/staging_dir/toolchain-arm_cortex-a7+neon-vfpv4_gcc-11.2.0_musl_eabi/bin/")
+# export STAGING_DIR=/Volumes/unix/HandsomeMod/staging_dir
+
+# sunxi H3
 SET(CMAKE_C_COMPILER ${TOOLCHAIN_DIR}arm-openwrt-linux-muslgnueabi-gcc)
 SET(CMAKE_CXX_COMPILER ${TOOLCHAIN_DIR}arm-openwrt-linux-muslgnueabi-g++)

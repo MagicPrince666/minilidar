@@ -3,8 +3,6 @@ SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 option(EXAMPLE "shall we complie example" on)
 # INCLUDE(build_for_host)
 
-include_directories(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/utils)
-
 PROJECT(CppDemo)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -25,34 +23,44 @@ ELSEIF (UNIX)
     add_subdirectory(epoll)
 ENDIF ()
 
-add_subdirectory(imu)
-add_subdirectory(input)
-add_subdirectory(distance)
-add_subdirectory(ultrasonic)
-add_subdirectory(moto)
-add_subdirectory(display)
+include_directories(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/utils)
+include_directories(
+"${CMAKE_SOURCE_DIR}/include"
+"${CMAKE_SOURCE_DIR}/utils"
+"${CMAKE_SOURCE_DIR}/imu"
+"${CMAKE_SOURCE_DIR}/drivers"
+"${CMAKE_SOURCE_DIR}/ultrasonic"
+"${CMAKE_SOURCE_DIR}/moto"
+"${CMAKE_SOURCE_DIR}/distance"
+"${CMAKE_SOURCE_DIR}/display"
+"${CMAKE_SOURCE_DIR}/input"
+"${CMAKE_SOURCE_DIR}/imu/mpu6050"
+)
+
 add_subdirectory(lib_json)
 
 set(EXEC_NAME minilidar)
 
-add_executable(${EXEC_NAME} main.cc
-    utils/uart.cc
-    utils/inotify.cc
-    utils/timerfd.cc
-    utils/utils.cc
-    utils/socket.cc
-    utils/udp_server.cc
+file(GLOB main_srcs 
+"${CMAKE_CURRENT_SOURCE_DIR}/*.cc"
+"${CMAKE_CURRENT_SOURCE_DIR}/utils/*.cc"
+"${CMAKE_CURRENT_SOURCE_DIR}/imu/*.cc"
+"${CMAKE_CURRENT_SOURCE_DIR}/drivers/*.cpp"
+"${CMAKE_CURRENT_SOURCE_DIR}/ultrasonic/*.cc"
+"${CMAKE_CURRENT_SOURCE_DIR}/moto/*.cc"
+"${CMAKE_CURRENT_SOURCE_DIR}/distance/*.cc"
+"${CMAKE_CURRENT_SOURCE_DIR}/display/*.cc"
+"${CMAKE_CURRENT_SOURCE_DIR}/input/*.cc"
+"${CMAKE_CURRENT_SOURCE_DIR}/imu/mpu6050/*.cpp"
+)
+
+add_executable(${EXEC_NAME}
+${main_srcs}
 )
 
 target_link_libraries(${EXEC_NAME} 
     multiplexing
     json
-    input
-    distance
-    imu
-    moto
-    display
-    ultrasonic
 )
 
 install(TARGETS ${EXEC_NAME}

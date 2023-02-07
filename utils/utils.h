@@ -17,6 +17,12 @@ namespace Utils {
     std::string getCurrentTime0();
     std::string ReadFileIntoString(const std::string& path);
     template<typename T> bool WriteFile(std::string path, T data);
+     /**
+     * @brief 搜索设备 iio 设备
+     * @param name 模块名称
+     * @return std::string 返回路径
+     */
+    std::string ScanIioDevice(std::string name);
 }
 
 template<typename T>
