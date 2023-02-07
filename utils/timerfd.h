@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include <sys/timerfd.h>
 #include "xepoll.h"
 #include "vl53l0x.h"
@@ -16,9 +18,9 @@ public:
 
 private:
     int timer_fd_{-1};
-    Vl53l0x *vl53l0x_;
-    Mpu6050 *mpu6050_;
-    LcdRgb *lcd_;
+    std::shared_ptr<Vl53l0x> vl53l0x_;
+    std::shared_ptr<Mpu6050> mpu6050_;
+    std::shared_ptr<LcdRgb> lcd_;
     std::string CurrentTime();
 };
 

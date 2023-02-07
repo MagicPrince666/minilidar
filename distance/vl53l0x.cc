@@ -5,12 +5,14 @@
 
 #include "vl53l0x.h"
 #include "interface.h"
+#include "utils.h"
 
 Vl53l0x::Vl53l0x(std::string device) 
-: device_(device) {
-    vl53l0x_fd_ = fopen(device.c_str(),"r+");
+{
+    device_ = Utils::ScanIioDevice(device) + "in_distance_raw";
+    vl53l0x_fd_ = fopen(device_.c_str(),"r+");
     if (nullptr == vl53l0x_fd_) {
-        std::cout << RED << device << " not exists!" << std::endl;
+        std::cout << RED << device_ << " not exists!" << std::endl;
 		assert(vl53l0x_fd_ == nullptr);
 	}
 }

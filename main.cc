@@ -7,15 +7,7 @@
 #include "spdlog/cfg/env.h"  // support for loading levels from the environment variable
 #include "spdlog/fmt/ostr.h" // support for user defined types
 
-#include "xepoll.h"
-#include "udp_server.h"
-#include "utils.h"
-// #include "uart.h"
-// #include "timerfd.h"
-// #include "inotify.h"
-// #include "gpio_key.h"
-// #include "interface.h"
-#include "common.h"
+#include "timerfd.h"
 
 #define BACKTRACE_DEBUG 0
 
@@ -89,14 +81,12 @@ int main(int argc, char* argv[])
 
     spdlog::info("Welcome to spdlog version {}.{}.{}  !", SPDLOG_VER_MAJOR, SPDLOG_VER_MINOR, SPDLOG_VER_PATCH);
 
-    LcdRgb lcd;
-    lcd.Init();
-    lcd.FillScreenSolid(RGB_BLUE);
-    std::string text = "Hello leo";
-    lcd.FbPutString(10, 10, text.c_str(), text.size(), RGB_RED, false, text.size());
+    TimerFd timer;
+    timer.init();
 
-    MY_EPOLL.EpollLoop();//等待事件触发
+    while (true) {
+        sleep(1);
+    }
 
     return 0;
-
 }

@@ -37,24 +37,11 @@ public:
 
     bool Init();
     int Mpu6050Test();
-    bool MpuGetGyroscope(int &gx, int &gy, int &gz);
-    bool MpuGetAccelerometer(int &ax, int &ay, int &az);
+    bool GetEulerQuat(euler_t &eu);
 
 private:
     std::string device_;
     GpioKey *mpu_int_;
-    std::unordered_map<std::string, int> g_accel_ = {
-        {"in_accel_x_raw", 0},
-        {"in_accel_y_raw", 0},
-        {"in_accel_z_raw", 0}
-    };
-
-    std::unordered_map<std::string, int> g_anglvel_ = {
-        {"in_anglvel_x_raw", 0},
-        {"in_anglvel_y_raw", 0},
-        {"in_anglvel_z_raw", 0}
-    };
-
     uint8_t (*gpio_irq_)(void) = nullptr;
     int16_t gs_accel_raw_[128][3];
     float gs_accel_g_[128][3];
@@ -66,8 +53,6 @@ private:
     float gs_yaw_[128];
     mpu6050_address_t addr_;
 
-    int Gyroscope();
-    int Accelerometer();
     void Euler2Quaternion(float roll, float pitch, float yaw, quaternion_t &quat);
 
     int GpioInterruptInit();
