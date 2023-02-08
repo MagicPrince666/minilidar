@@ -19,7 +19,7 @@
 TimerFd::TimerFd()
 {
     timer_fd_ = -1;
-    std::cout << "timerfd init failed!" << std::endl;
+    std::cout << "timerfd init!" << std::endl;
 }
 
 TimerFd::~TimerFd()
@@ -64,13 +64,13 @@ bool TimerFd::init()
     // mpu6050_  = std::make_shared<Mpu6050>();
     // mpu6050_->Init();
 
-    vl53l0x_ = std::make_shared<Vl53l0x>();
+    // vl53l0x_ = std::make_shared<Vl53l0x>();
 
-    lcd_              = std::make_shared<LcdRgb>("/dev/fb0");
-    std::string title = "Huang liquan ";
-    title += CurrentTime();
-    lcd_->FillScreenSolid(0x0000ff);
-    lcd_->FbPutString(30, 0, title.c_str(), title.size(), RGB_GOLDEN, true, title.size());
+    // lcd_              = std::make_shared<LcdRgb>("/dev/fb0");
+    // std::string title = "Huang liquan ";
+    // title += CurrentTime();
+    // lcd_->FillScreenSolid(0x0000ff);
+    // lcd_->FbPutString(30, 0, title.c_str(), title.size(), RGB_GOLDEN, true, title.size());
 
     return true;
 }

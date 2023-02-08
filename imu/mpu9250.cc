@@ -154,6 +154,7 @@ int Mpu9250::Mpu9250Test()
 {
     uint32_t cnt;
     uint16_t len = 128;
+    mpu9250_interface_delay_ms(500);
     while(true) {
         /* read */
         if (mpu9250_dmp_read_all(gs_accel_raw, gs_accel_g,
