@@ -27,3 +27,10 @@ $ mkdir build
 $ cd build
 $ cmake -DCMAKE_TOOLCHAIN_FILE=cmake/build_for_f1c100s.cmake ..
 ```
+
+# 编译RK3308
+```
+$ mkdir build
+$ cd build
+$ cmake -DCMAKE_TOOLCHAIN_FILE=cmake/build_for_rk3308.cmake ..
+```
