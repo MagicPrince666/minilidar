@@ -9,6 +9,8 @@
 
 #include "timerfd.h"
 #include "mpu9250.h"
+#include "common.h"
+#include "touchscreen.h"
 
 #define BACKTRACE_DEBUG 0
 
@@ -82,9 +84,17 @@ int main(int argc, char* argv[])
 
     spdlog::info("Welcome to spdlog version {}.{}.{}  !", SPDLOG_VER_MAJOR, SPDLOG_VER_MINOR, SPDLOG_VER_PATCH);
 
-    Mpu9250 imu;
-    imu.Init();
-    imu.Mpu9250Test();
+    // Mpu9250 imu;
+    // imu.Init();
+    // imu.Mpu9250Test();
+
+    LcdRgb lcd;
+    lcd.Init();
+    lcd.FillScreenSolid(RGB_BLUE);
+    lcd.FbPutString(16, 0 , "huangliquan", 12, RGB_YELLOW, false, 12);
+
+    TouchScreen xpt2046;
+    xpt2046.Init();
 
     while (true) {
         sleep(1);
