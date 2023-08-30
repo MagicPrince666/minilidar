@@ -90,7 +90,7 @@ bool TouchScreen::Init()
             ioctl(fd, EVIOCGNAME(sizeof(buf)), buf);
             dev = buf;
             std::cout << "Device info " << dev << std::endl;
-            if (dev.find("Touchscreen") != std::string::npos) {
+            if (dev.find("TouchScreen") != std::string::npos || dev.find("Touchscreen") != std::string::npos) {
                 key_input_fd_ = fd;
                 break;
             }
