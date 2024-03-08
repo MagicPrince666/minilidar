@@ -4,7 +4,7 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_G
 endif()
 
 if(NOT (HAVE_CLOCALE AND HAVE_LCONV_SIZE AND HAVE_DECIMAL_POINT AND HAVE_LOCALECONV))
-    message(WARNING "Locale functionality is not supported")
+    # message(WARNING "Locale functionality is not supported")
     if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.12.0)
         add_compile_definitions(JSONCPP_NO_LOCALE_SUPPORT)
     else()

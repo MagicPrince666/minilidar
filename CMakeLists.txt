@@ -62,6 +62,7 @@ ${main_srcs}
 
 target_link_libraries(${EXEC_NAME} 
     multiplexing
+    pthread
     json
 )
 
